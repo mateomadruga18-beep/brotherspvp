@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate deploy"
+    "prisma:migrate": "prisma migrate deploy",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@paypal/paypal-server-sdk": "^2.3.0",
