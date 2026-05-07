@@ -1,0 +1,174 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  --background: #070a12;
+  --foreground: #e8eefc;
+  --muted: rgba(232, 238, 252, 0.72);
+  --card: rgba(255, 255, 255, 0.06);
+  --card-border: rgba(255, 255, 255, 0.12);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+::selection {
+  background: rgba(139, 92, 246, 0.35);
+}
+
+.container {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 76rem;
+  padding-inline: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding-inline: 1.5rem;
+  }
+}
+
+@keyframes bg-pan {
+  0% {
+    transform: translate3d(-2%, -2%, 0) scale(1.05);
+  }
+  50% {
+    transform: translate3d(2%, 1%, 0) scale(1.08);
+  }
+  100% {
+    transform: translate3d(-2%, -2%, 0) scale(1.05);
+  }
+}
+
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+@keyframes toast-in {
+  from {
+    transform: translate3d(0, 8px, 0);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+.animated-bg {
+  position: absolute;
+  inset: -4rem;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.animated-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(1200px 600px at 20% 10%, rgba(59, 130, 246, 0.22), transparent 55%),
+    radial-gradient(900px 500px at 80% 15%, rgba(168, 85, 247, 0.18), transparent 55%),
+    radial-gradient(1000px 650px at 50% 80%, rgba(16, 185, 129, 0.12), transparent 55%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 40%);
+  filter: blur(0px);
+  animation: bg-pan 14s ease-in-out infinite;
+}
+
+.bg-grid {
+  position: absolute;
+  inset: -2rem;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.9) 10%, transparent 62%);
+  opacity: 0.35;
+  transform: translateZ(0);
+}
+
+.glass {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(14px);
+}
+
+.mc-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.4rem;
+  border: 1px solid rgba(0, 0, 0, 0.85);
+  background: linear-gradient(180deg, rgba(40, 214, 90, 1), rgba(14, 146, 56, 1));
+  color: rgba(6, 12, 8, 0.92);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.55) inset,
+    0 10px 30px rgba(0, 0, 0, 0.45);
+  transform: translateZ(0);
+  transition:
+    transform 180ms ease,
+    filter 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.mc-button::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: 0.34rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.26), transparent 55%);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.mc-button:hover {
+  transform: translateY(-1px);
+  filter: saturate(1.05);
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.55) inset,
+    0 14px 38px rgba(0, 0, 0, 0.55);
+}
+
+.mc-button:active {
+  transform: translateY(1px);
+  filter: saturate(0.98);
+}
+
+.mc-button-secondary {
+  background: linear-gradient(180deg, rgba(129, 140, 248, 1), rgba(88, 101, 242, 1));
+  color: rgba(7, 12, 21, 0.92);
+}
+
+.mc-button-ghost {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+  color: rgba(232, 238, 252, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.25) inset,
+    0 14px 38px rgba(0, 0, 0, 0.45);
+}
+
+.mc-button-ghost::after {
+  opacity: 0.55;
+}

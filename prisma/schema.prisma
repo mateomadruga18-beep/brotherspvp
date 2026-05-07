@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum PaymentProvider {
+  paypal
+  mercadopago
+}
+
+enum OrderStatus {
+  pending
+  paid
+  failed
+}
+
+enum DeliveryTaskStatus {
+  pending
+  delivered
+  failed
+}
+
+model Order {
+  id                    String                 @id
+  username              String
+  gateway               PaymentProvider
+  status                OrderStatus            @default(pending)
+  total                 Decimal                @db.Decimal(10, 2)
+  currency              String                 @default("USD")
+  items                 Json
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  paymentReferences     PaymentReference[]
+  deliveryTasks         DeliveryTask[]
+  paymentStatusHistory  PaymentStatusHistory[]
+}
+
+model WebhookEvent {
+  id         String          @id @default(cuid())
+  provider   PaymentProvider
+  eventId    String
+  processedAt DateTime       @default(now())
+  payloadHash String
+
+  @@unique([provider, eventId])
+  @@index([eventId])
+}
+
+model PaymentReference {
+  id                String          @id @default(cuid())
+  provider          PaymentProvider
+  providerPaymentId String
+  internalOrderId   String
+  createdAt         DateTime        @default(now())
+  order             Order           @relation(fields: [internalOrderId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerPaymentId])
+  @@index([providerPaymentId])
+}
+
+model DeliveryTask {
+  id         String             @id
+  orderId    String
+  username   String
+  command    String
+  status     DeliveryTaskStatus @default(pending)
+  retryCount Int                @default(0)
+  lastError  String?
+  nextAttemptAt DateTime        @default(now())
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+  order      Order              @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  logs       DeliveryLog[]
+
+  @@unique([orderId, command])
+  @@index([status, nextAttemptAt])
+}
+
+model DeliveryLog {
+  id        String      @id @default(cuid())
+  taskId    String
+  message   String
+  createdAt DateTime    @default(now())
+  task      DeliveryTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+model PaymentStatusHistory {
+  id        String          @id @default(cuid())
+  orderId   String
+  provider  PaymentProvider
+  paymentId String?
+  status    OrderStatus
+  metadata  Json?
+  createdAt DateTime        @default(now())
+  order     Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model RateLimitBucket {
+  id          String   @id @default(cuid())
+  scope       String
+  identifier  String
+  windowStart DateTime
+  resetAt     DateTime
+  hits        Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([scope, identifier, windowStart])
+  @@index([scope, identifier, resetAt])
+  @@index([resetAt])
+}

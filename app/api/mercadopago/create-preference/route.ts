@@ -1,0 +1,272 @@
+import type { CartItem } from "../../../lib/storeTypes";
+import { env } from "../../../server/env";
+import { registerPaymentReference } from "../../../server/services/paymentConfirmation";
+import { createOrder } from "../../../server/services/orders";
+import { readJsonBody } from "../../../server/security/body";
+import { hashIdentifier } from "../../../server/security/request";
+import { enforceRateLimit } from "../../../server/security/rateLimit";
+import { applyRouteSecurity } from "../../../server/security/routeSecurity";
+import { fetchWithTimeout, TimeoutError } from "../../../server/security/timeout";
+import {
+  badRequest,
+  gatewayTimeout,
+  handleRouteError,
+  ok,
+  serverError,
+} from "../../../server/utils/apiResponse";
+import {
+  sanitizeUserString,
+  validateCartItems,
+  validateMinecraftUsername,
+} from "../../../server/utils/validation";
+
+type CreatePreferenceBody = {
+  productName?: string;
+  username?: string;
+  items?: CartItem[];
+};
+
+function resolveBaseUrl(request: Request) {
+  const candidate = env.BASE_URL ?? new URL(request.url).origin;
+
+  try {
+    const parsed = new URL(candidate);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      return { ok: false as const, reason: "BASE_URL must use http or https." };
+    }
+    return { ok: true as const, value: parsed };
+  } catch {
+    return { ok: false as const, reason: "BASE_URL must be an absolute URL." };
+  }
+}
+
+function buildAbsoluteUrl(baseUrl: URL, path: string) {
+  const url = new URL(path, baseUrl);
+  if (!url.protocol.startsWith("http")) {
+    return { ok: false as const, reason: `Invalid URL protocol for ${path}.` };
+  }
+  return { ok: true as const, value: url.toString() };
+}
+
+function isLocalHostname(hostname: string) {
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "::1" ||
+    hostname.endsWith(".local")
+  );
+}
+
+export async function POST(request: Request) {
+  const { context, response } = await applyRouteSecurity(request, {
+    requireTrustedOrigin: true,
+    rateLimits: [
+      {
+        scope: "mercadopago.create-preference.ip",
+        identifier: contextSafeIp(request),
+        limit: 10,
+        windowMs: 60_000,
+        code: "RATE_LIMITED",
+        message: "Too many checkout attempts. Try again shortly.",
+      },
+    ],
+  });
+  if (response) return response;
+
+  try {
+    if (!env.MERCADOPAGO_ACCESS_TOKEN || !env.MERCADOPAGO_PUBLIC_KEY) {
+      return serverError(
+        "MERCADOPAGO_NOT_CONFIGURED",
+        "Mercado Pago credentials are missing.",
+        { request, requestId: context.requestId },
+      );
+    }
+
+    const body = await readJsonBody<CreatePreferenceBody>(request, context, {
+      maxBytes: 12 * 1024,
+    });
+    if (!body.ok) return body.response;
+
+    const username = validateMinecraftUsername(body.value.username);
+    if (!username.ok) {
+      return badRequest("INVALID_USERNAME", username.reason, {
+        request,
+        requestId: context.requestId,
+      });
+    }
+
+    const validatedItems = validateCartItems(body.value.items);
+    if (!validatedItems.ok) {
+      return badRequest("INVALID_CART", validatedItems.reason, {
+        request,
+        requestId: context.requestId,
+      });
+    }
+
+    const productName =
+      sanitizeUserString(body.value.productName, 120) || "BrotherSPvP Store Order";
+
+    const cartFingerprint = hashIdentifier(
+      JSON.stringify({
+        provider: "mercadopago",
+        username: username.value,
+        items: validatedItems.value,
+      }),
+    );
+
+    const duplicateCheckoutResponse = await enforceRateLimit(request, context, {
+      scope: "checkout.duplicate",
+      identifier: `${context.ipHash}:${cartFingerprint}`,
+      limit: 1,
+      windowMs: 20_000,
+      code: "DUPLICATE_CHECKOUT",
+      message: "Duplicate checkout attempt detected. Wait a few seconds before retrying.",
+    });
+    if (duplicateCheckoutResponse) return duplicateCheckoutResponse;
+
+    const paymentCooldownResponse = await enforceRateLimit(request, context, {
+      scope: "checkout.cooldown",
+      identifier: `${context.ipHash}:mercadopago:${username.value}`,
+      limit: 3,
+      windowMs: 120_000,
+      code: "PAYMENT_COOLDOWN",
+      message: "Too many payment attempts for this account. Try again shortly.",
+    });
+    if (paymentCooldownResponse) return paymentCooldownResponse;
+
+    const created = await createOrder({
+      username: username.value,
+      items: validatedItems.value,
+      paymentMethod: "mercadopago",
+    });
+    if (!created.ok) {
+      return badRequest("INVALID_ITEMS", created.reason, {
+        request,
+        requestId: context.requestId,
+      });
+    }
+
+    const baseUrl = resolveBaseUrl(request);
+    if (!baseUrl.ok) {
+      return serverError("INVALID_BASE_URL", baseUrl.reason, {
+        request,
+        requestId: context.requestId,
+      });
+    }
+    if (isLocalHostname(baseUrl.value.hostname)) {
+      return badRequest(
+        "INVALID_BASE_URL",
+        "Mercado Pago Checkout Pro requires a public BASE_URL.",
+        { request, requestId: context.requestId },
+      );
+    }
+
+    const amount = Number(created.order.totalUsd.toFixed(2));
+    const externalReference = created.order.id;
+
+    const successUrl = buildAbsoluteUrl(baseUrl.value, "/checkout/success");
+    const failureUrl = buildAbsoluteUrl(baseUrl.value, "/checkout/failure");
+    const pendingUrl = buildAbsoluteUrl(baseUrl.value, "/checkout/pending");
+    if (!successUrl.ok || !failureUrl.ok || !pendingUrl.ok) {
+      return serverError("INVALID_BACK_URLS", "Failed to build checkout redirect URLs.", {
+        request,
+        requestId: context.requestId,
+      });
+    }
+
+    const mpRes = await fetchWithTimeout(
+      "https://api.mercadopago.com/checkout/preferences",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${env.MERCADOPAGO_ACCESS_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          items: [
+            {
+              title: productName,
+              quantity: 1,
+              currency_id: "USD",
+              unit_price: amount,
+            },
+          ],
+          external_reference: externalReference,
+          back_urls: {
+            success: successUrl.value,
+            failure: failureUrl.value,
+            pending: pendingUrl.value,
+          },
+          auto_return: "approved",
+        }),
+      },
+      10_000,
+    );
+
+    if (!mpRes.ok) {
+      const mpErr = await mpRes.text();
+      return serverError("MERCADOPAGO_CREATE_FAILED", mpErr || "Failed to create preference.", {
+        request,
+        requestId: context.requestId,
+      });
+    }
+
+    const payload = (await mpRes.json()) as {
+      id?: string;
+      init_point?: string;
+      sandbox_init_point?: string;
+    };
+
+    const checkoutUrl = payload.init_point ?? payload.sandbox_init_point ?? null;
+    if (!checkoutUrl || !payload.id) {
+      return serverError(
+        "MERCADOPAGO_INVALID_RESPONSE",
+        "Mercado Pago did not return a valid checkout URL.",
+        { request, requestId: context.requestId },
+      );
+    }
+
+    await registerPaymentReference({
+      provider: "mercadopago",
+      paymentId: payload.id,
+      orderId: created.order.id,
+    });
+
+    return ok(
+      {
+        preferenceId: payload.id,
+        checkoutUrl,
+        publicKey: env.MERCADOPAGO_PUBLIC_KEY,
+        orderId: created.order.id,
+      },
+      {
+        request,
+        requestId: context.requestId,
+      },
+    );
+  } catch (error) {
+    if (error instanceof TimeoutError) {
+      return gatewayTimeout(
+        "MERCADOPAGO_CREATE_TIMEOUT",
+        "Mercado Pago took too long to respond.",
+        { request, requestId: context.requestId },
+      );
+    }
+
+    return handleRouteError(error, {
+      request,
+      requestId: context.requestId,
+      code: "MERCADOPAGO_CREATE_ERROR",
+      publicMessage: "Could not create the Mercado Pago checkout.",
+      logEvent: "mercadopago_create_preference_error",
+    });
+  }
+}
+
+function contextSafeIp(request: Request) {
+  return request.headers.get("cf-connecting-ip")
+    ?? request.headers.get("x-vercel-forwarded-for")
+    ?? request.headers.get("x-forwarded-for")
+    ?? request.headers.get("x-real-ip")
+    ?? "unknown";
+}
