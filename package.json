@@ -4,13 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
-    "postinstall": "prisma generate",
-    "vercel-build": "prisma generate && next build"
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@paypal/paypal-server-sdk": "^2.3.0",
