@@ -1,4 +1,5 @@
 import "server-only";
+import { isIP } from "node:net";
 
 type NodeEnv = "development" | "production" | "test";
 type PayPalEnvironment = "sandbox" | "live";
@@ -25,6 +26,71 @@ function parseNodeEnv(value: string | undefined): NodeEnv {
     return value;
   }
   return "development";
+}
+
+function parseBooleanFlag(value: string | undefined) {
+  return /^(1|true|yes|on)$/i.test(value?.trim() ?? "");
+}
+
+function isPrivateIpv4(hostname: string) {
+  const [a = "", b = ""] = hostname.split(".");
+  const first = Number(a);
+  const second = Number(b);
+
+  if (!Number.isInteger(first) || !Number.isInteger(second)) {
+    return false;
+  }
+
+  return (
+    first === 10
+    || first === 127
+    || first === 0
+    || (first === 169 && second === 254)
+    || (first === 172 && second >= 16 && second <= 31)
+    || (first === 192 && second === 168)
+  );
+}
+
+function isPrivateIpv6(hostname: string) {
+  const normalized = hostname.toLowerCase();
+  return normalized === "::1" || normalized.startsWith("fc") || normalized.startsWith("fd")
+    || normalized.startsWith("fe80:");
+}
+
+function isLocalHostname(hostname: string) {
+  const normalized = hostname.trim().toLowerCase();
+  if (!normalized) return true;
+
+  if (
+    normalized === "localhost"
+    || normalized === "0.0.0.0"
+    || normalized === "::1"
+    || normalized.endsWith(".local")
+    || normalized.endsWith(".test")
+    || normalized.endsWith(".internal")
+  ) {
+    return true;
+  }
+
+  if (!normalized.includes(".")) {
+    return true;
+  }
+
+  const ipVersion = isIP(normalized);
+  if (ipVersion === 4) return isPrivateIpv4(normalized);
+  if (ipVersion === 6) return isPrivateIpv6(normalized);
+
+  return false;
+}
+
+function isPublicDeploymentOrigin(origin: string | undefined) {
+  if (!origin) return false;
+
+  try {
+    return !isLocalHostname(new URL(origin).hostname);
+  } catch {
+    return false;
+  }
 }
 
 function normalizeOrigin(value: string | undefined, field: string, errors: string[]) {
@@ -84,59 +150,111 @@ function validatePublicEnvExposure(errors: string[]) {
   }
 }
 
-const errors: string[] = [];
-const nodeEnv = parseNodeEnv(process.env.NODE_ENV);
-const baseUrl = normalizeOrigin(process.env.BASE_URL, "BASE_URL", errors);
-const publicBaseUrl = normalizeOrigin(process.env.NEXT_PUBLIC_BASE_URL, "NEXT_PUBLIC_BASE_URL", errors);
-const paypalEnvironment = (process.env.PAYPAL_ENVIRONMENT ?? "sandbox").trim().toLowerCase();
+function formatListGroup(title: string, entries: string[]) {
+  if (entries.length === 0) return "";
+  return `${title}:\n- ${entries.join("\n- ")}`;
+}
 
-validatePublicEnvExposure(errors);
+function warnDevelopmentConfig(entries: string[]) {
+  if (entries.length === 0) return;
+
+  console.warn(
+    [
+      "Environment configuration warnings:",
+      formatListGroup("Development missing config (non-blocking)", entries),
+    ]
+      .filter(Boolean)
+      .join("\n"),
+  );
+}
+
+const blockingErrors: string[] = [];
+const productionMissingConfig: string[] = [];
+const developmentMissingConfig: string[] = [];
+const nodeEnv = parseNodeEnv(process.env.NODE_ENV);
+const baseUrl = normalizeOrigin(process.env.BASE_URL, "BASE_URL", blockingErrors);
+const publicBaseUrl = normalizeOrigin(
+  process.env.NEXT_PUBLIC_BASE_URL,
+  "NEXT_PUBLIC_BASE_URL",
+  blockingErrors,
+);
+const paypalEnvironment = (process.env.PAYPAL_ENVIRONMENT ?? "sandbox").trim().toLowerCase();
+const forceProductionValidation = parseBooleanFlag(process.env.FORCE_PRODUCTION_VALIDATION);
+const isVercelProduction = (process.env.VERCEL_ENV ?? "").trim().toLowerCase() === "production";
+const hasPublicBaseUrl = isPublicDeploymentOrigin(baseUrl) || isPublicDeploymentOrigin(publicBaseUrl);
+const isNextProductionBuildPhase = process.env.NEXT_PHASE === "phase-production-build";
+const enforceProductionValidation =
+  forceProductionValidation
+  || isVercelProduction
+  || (nodeEnv === "production" && hasPublicBaseUrl && !isNextProductionBuildPhase);
+
+validatePublicEnvExposure(blockingErrors);
 
 if (paypalEnvironment !== "sandbox" && paypalEnvironment !== "live") {
-  errors.push("PAYPAL_ENVIRONMENT must be either 'sandbox' or 'live'.");
+  blockingErrors.push("PAYPAL_ENVIRONMENT must be either 'sandbox' or 'live'.");
 }
 
 const databaseUrl = process.env.DATABASE_URL?.trim();
 if (!databaseUrl) {
-  errors.push("DATABASE_URL is required.");
+  blockingErrors.push("DATABASE_URL is required.");
 }
 
-if (nodeEnv === "production") {
-  const requiredInProduction = [
-    "PAYPAL_CLIENT_ID",
-    "PAYPAL_CLIENT_SECRET",
-    "PAYPAL_WEBHOOK_SECRET",
-    "MERCADOPAGO_ACCESS_TOKEN",
-    "MERCADOPAGO_WEBHOOK_SECRET",
-    "NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY",
-    "RCON_HOST",
-    "RCON_PORT",
-    "RCON_PASSWORD",
-  ] as const;
+const requiredInProduction = [
+  "PAYPAL_CLIENT_ID",
+  "PAYPAL_CLIENT_SECRET",
+  "PAYPAL_WEBHOOK_SECRET",
+  "MERCADOPAGO_ACCESS_TOKEN",
+  "MERCADOPAGO_WEBHOOK_SECRET",
+  "NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY",
+  "RCON_HOST",
+  "RCON_PORT",
+  "RCON_PASSWORD",
+] as const;
 
-  for (const name of requiredInProduction) {
-    if (!process.env[name]?.trim()) {
-      errors.push(`${name} is required in production.`);
-    }
-  }
+for (const name of requiredInProduction) {
+  if (process.env[name]?.trim()) continue;
 
-  if (!(baseUrl || publicBaseUrl)) {
-    errors.push("BASE_URL or NEXT_PUBLIC_BASE_URL is required in production.");
+  if (enforceProductionValidation) {
+    productionMissingConfig.push(`${name} is required in production.`);
+  } else if (
+    name === "PAYPAL_WEBHOOK_SECRET"
+    || name === "MERCADOPAGO_WEBHOOK_SECRET"
+    || name === "RCON_PASSWORD"
+  ) {
+    developmentMissingConfig.push(
+      `${name} is not configured. Local development will continue, but that integration stays unavailable until you set it.`,
+    );
   }
+}
+
+if (enforceProductionValidation && !(baseUrl || publicBaseUrl)) {
+  productionMissingConfig.push("BASE_URL or NEXT_PUBLIC_BASE_URL is required in production.");
 }
 
 const rconPort = process.env.RCON_PORT?.trim();
 if (rconPort && !/^\d+$/.test(rconPort)) {
-  errors.push("RCON_PORT must be numeric.");
+  blockingErrors.push("RCON_PORT must be numeric.");
 }
 
-const trustedOrigins = parseTrustedOrigins(errors);
-if (trustedOrigins.length === 0 && nodeEnv === "production") {
-  errors.push("At least one trusted origin is required in production.");
+const trustedOrigins = parseTrustedOrigins(blockingErrors);
+if (trustedOrigins.length === 0 && enforceProductionValidation) {
+  productionMissingConfig.push("At least one trusted origin is required in production.");
 }
 
-if (errors.length > 0) {
-  throw new Error(`Invalid environment configuration:\n- ${errors.join("\n- ")}`);
+if (!isNextProductionBuildPhase) {
+  warnDevelopmentConfig(developmentMissingConfig);
+}
+
+if (blockingErrors.length > 0 || productionMissingConfig.length > 0) {
+  throw new Error(
+    [
+      "Invalid environment configuration:",
+      formatListGroup("Configuration errors (blocking)", blockingErrors),
+      formatListGroup("Production missing config (blocking)", productionMissingConfig),
+    ]
+      .filter(Boolean)
+      .join("\n"),
+  );
 }
 
 export const env: StoreEnv = {
