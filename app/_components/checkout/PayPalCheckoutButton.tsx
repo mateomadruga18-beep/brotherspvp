@@ -7,6 +7,7 @@ import { useToast } from "../toast";
 type ApiOk<T> = { ok: true; data: T };
 type ApiErr = { ok: false; error: { code: string; message: string } };
 type LoadState = "loading" | "ready" | "error";
+type PayPalEnvironment = "sandbox" | "live";
 
 async function apiPost<T>(url: string, body: unknown): Promise<ApiOk<T> | ApiErr> {
   try {
@@ -42,6 +43,7 @@ export function PayPalCheckoutButton({
 }) {
   const { push } = useToast();
   const [clientId, setClientId] = useState<string | null>(null);
+  const [environment, setEnvironment] = useState<PayPalEnvironment>("sandbox");
   const [loadState, setLoadState] = useState<LoadState>("loading");
 
   useEffect(() => {
@@ -52,11 +54,14 @@ export function PayPalCheckoutButton({
 
       try {
         const res = await fetch("/api/paypal/config");
-        const json = (await res.json()) as ApiOk<{ clientId: string }> | ApiErr;
+        const json = (await res.json()) as
+          | ApiOk<{ clientId: string; environment: PayPalEnvironment }>
+          | ApiErr;
         if (cancelled) return;
 
         if (json.ok) {
           setClientId(json.data.clientId);
+          setEnvironment(json.data.environment);
           setLoadState("ready");
           return;
         }
@@ -171,7 +176,9 @@ export function PayPalCheckoutButton({
             }}
           />
           <div className="mt-2 text-xs font-semibold text-white/55">
-            Sandbox mode. Use a PayPal Sandbox buyer account to test.
+            {environment === "live"
+              ? "Live PayPal checkout. Payments are processed securely by PayPal."
+              : "Sandbox mode. Use a PayPal Sandbox buyer account to test."}
           </div>
         </div>
       </PayPalScriptProvider>

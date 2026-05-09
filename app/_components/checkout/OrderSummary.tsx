@@ -21,7 +21,7 @@ export function OrderSummary({
         <div>
           <div className="text-sm font-black text-white">Order summary</div>
           <div className="mt-1 text-xs font-semibold text-white/60">
-            Instant delivery after payment (demo).
+            Instant delivery after payment confirmation.
           </div>
         </div>
         {!compact && (

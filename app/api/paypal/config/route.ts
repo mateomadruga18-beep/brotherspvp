@@ -30,7 +30,13 @@ export async function GET(request: Request) {
       );
     }
 
-    return ok({ clientId: env.PAYPAL_CLIENT_ID }, { request, requestId: context.requestId });
+    return ok(
+      {
+        clientId: env.PAYPAL_CLIENT_ID,
+        environment: env.PAYPAL_ENVIRONMENT,
+      },
+      { request, requestId: context.requestId },
+    );
   } catch (error) {
     return handleRouteError(error, {
       request,
