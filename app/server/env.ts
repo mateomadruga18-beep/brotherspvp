@@ -183,10 +183,14 @@ const forceProductionValidation = parseBooleanFlag(process.env.FORCE_PRODUCTION_
 const isVercelProduction = (process.env.VERCEL_ENV ?? "").trim().toLowerCase() === "production";
 const hasPublicBaseUrl = isPublicDeploymentOrigin(baseUrl) || isPublicDeploymentOrigin(publicBaseUrl);
 const isNextProductionBuildPhase = process.env.NEXT_PHASE === "phase-production-build";
+
+/** During `next build`, env may be incomplete; validate again at runtime (serverless excludes this phase). */
 const enforceProductionValidation =
   forceProductionValidation
-  || isVercelProduction
-  || (nodeEnv === "production" && hasPublicBaseUrl && !isNextProductionBuildPhase);
+  || (
+    !isNextProductionBuildPhase
+    && (isVercelProduction || (nodeEnv === "production" && hasPublicBaseUrl))
+  );
 
 validatePublicEnvExposure(blockingErrors);
 
