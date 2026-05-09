@@ -39,7 +39,6 @@ export default function CheckoutPage() {
 
   const subtotalUsd = useMemo(() => computeSubtotal(cartLines), [cartLines]);
   const totalUsd = subtotalUsd;
-  const mercadoPagoPublicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY;
 
   const [username, setUsername] = useState(
     () => (typeof window === "undefined" ? "" : loadCheckoutDraft()?.username ?? ""),
@@ -55,8 +54,7 @@ export default function CheckoutPage() {
   );
 
   const canPayWithPayPal = cartLines.length > 0 && usernameResult.ok;
-  const canPayWithMercadoPago =
-    cartLines.length > 0 && usernameResult.ok && Boolean(mercadoPagoPublicKey);
+  const canPayWithMercadoPago = cartLines.length > 0 && usernameResult.ok;
   const firstProduct = getProductById(cartLines[0]?.productId ?? "");
   const productName =
     cartLines.length === 1
