@@ -26,6 +26,71 @@ type CreatePreferenceBody = {
   items?: CartItem[];
 };
 
+const DEFAULT_MERCADOPAGO_CURRENCY_ID = "UYU";
+const DEFAULT_UYU_PER_USD = 40;
+
+function parsePositiveNumber(value: string | undefined, fallback: number) {
+  if (!value?.trim()) return fallback;
+
+  const parsed = Number(value.trim());
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
+function resolveMercadoPagoPricing(totalUsd: number) {
+  const currencyId = (
+    process.env.MERCADOPAGO_CURRENCY_ID ?? DEFAULT_MERCADOPAGO_CURRENCY_ID
+  )
+    .trim()
+    .toUpperCase();
+
+  if (!/^[A-Z]{3}$/.test(currencyId)) {
+    return {
+      ok: false as const,
+      reason: "MERCADOPAGO_CURRENCY_ID must be a 3-letter currency code.",
+    };
+  }
+
+  if (!Number.isFinite(totalUsd) || totalUsd <= 0) {
+    return {
+      ok: false as const,
+      reason: "Mercado Pago order total must be greater than zero.",
+    };
+  }
+
+  if (currencyId === "UYU") {
+    const uyuPerUsd = parsePositiveNumber(
+      process.env.MERCADOPAGO_UYU_PER_USD,
+      DEFAULT_UYU_PER_USD,
+    );
+
+    if (uyuPerUsd === null) {
+      return {
+        ok: false as const,
+        reason: "MERCADOPAGO_UYU_PER_USD must be a positive number.",
+      };
+    }
+
+    return {
+      ok: true as const,
+      amount: Math.max(1, Math.round(totalUsd * uyuPerUsd)),
+      currencyId,
+    };
+  }
+
+  if (currencyId === "USD") {
+    return {
+      ok: true as const,
+      amount: Number(totalUsd.toFixed(2)),
+      currencyId,
+    };
+  }
+
+  return {
+    ok: false as const,
+    reason: "Unsupported MERCADOPAGO_CURRENCY_ID. Use UYU for Mercado Pago Uruguay.",
+  };
+}
+
 function resolveBaseUrl(request: Request) {
   const candidate = env.BASE_URL ?? new URL(request.url).origin;
 
@@ -161,7 +226,15 @@ export async function POST(request: Request) {
       );
     }
 
-    const amount = Number(created.order.totalUsd.toFixed(2));
+    const pricing = resolveMercadoPagoPricing(created.order.totalUsd);
+    if (!pricing.ok) {
+      return serverError("INVALID_MERCADOPAGO_PRICING", pricing.reason, {
+        request,
+        requestId: context.requestId,
+      });
+    }
+
+    const amount = pricing.amount;
     const externalReference = created.order.id;
 
     const successUrl = buildAbsoluteUrl(baseUrl.value, "/checkout/success");
@@ -187,7 +260,7 @@ export async function POST(request: Request) {
             {
               title: productName,
               quantity: 1,
-              currency_id: "USD",
+              currency_id: pricing.currencyId,
               unit_price: amount,
             },
           ],
@@ -238,6 +311,8 @@ export async function POST(request: Request) {
         checkoutUrl,
         publicKey: env.MERCADOPAGO_PUBLIC_KEY,
         orderId: created.order.id,
+        currencyId: pricing.currencyId,
+        amount,
       },
       {
         request,
