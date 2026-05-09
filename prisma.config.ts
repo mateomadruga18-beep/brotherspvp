@@ -1,4 +1,13 @@
-import { defineConfig, env } from "prisma/config";
+import { defineConfig } from "prisma/config";
+
+function datasourceUrl(): string {
+  const direct = process.env.DIRECT_URL;
+  const pooled = process.env.DATABASE_URL;
+  if (direct) return direct;
+  if (pooled) return pooled;
+  // `prisma generate` does not open a DB connection; a valid URL shape is enough for config load.
+  return "postgresql://postgres:postgres@127.0.0.1:5432/postgres";
+}
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
@@ -6,8 +15,7 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    // Supabase pooled URL is used at runtime via Prisma adapter.
-    // Prisma migrations should use DIRECT_URL when available.
-    url: process.env.DIRECT_URL ?? env("DATABASE_URL"),
+    // Supabase: prefer DIRECT_URL for migrations; pooled DATABASE_URL matches runtime adapter.
+    url: datasourceUrl(),
   },
 });
