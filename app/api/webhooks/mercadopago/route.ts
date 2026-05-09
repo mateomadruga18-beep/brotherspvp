@@ -51,6 +51,18 @@ export async function POST(request: Request) {
   if (response) return response;
 
   try {
+    if (env.STRICT_ENV_VALIDATION && !env.MERCADOPAGO_WEBHOOK_SECRET) {
+      securityLog("error", "mercadopago_webhook_secret_missing", {
+        requestId: context.requestId,
+        path: context.path,
+      });
+      return serverError(
+        "MERCADOPAGO_WEBHOOK_NOT_CONFIGURED",
+        "Missing MERCADOPAGO_WEBHOOK_SECRET.",
+        { request, requestId: context.requestId },
+      );
+    }
+
     const requestUrl = new URL(request.url);
     const hasSignatureHeader = Boolean(request.headers.get("x-signature"));
     const isAuthorized = hasSignatureHeader

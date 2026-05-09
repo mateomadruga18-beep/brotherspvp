@@ -51,3 +51,5 @@ next-env.d.ts
 
 # prisma (generated on install / build)
 /generated
+
+.vercel

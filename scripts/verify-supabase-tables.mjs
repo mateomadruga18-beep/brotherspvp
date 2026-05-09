@@ -8,6 +8,7 @@ const required = [
   "DeliveryTask",
   "DeliveryLog",
   "PaymentStatusHistory",
+  "RateLimitBucket",
 ];
 
 async function main() {

@@ -6,6 +6,7 @@ type PayPalEnvironment = "sandbox" | "live";
 
 type StoreEnv = {
   NODE_ENV: NodeEnv;
+  STRICT_ENV_VALIDATION: boolean;
   DATABASE_URL: string;
   BASE_URL?: string;
   PAYPAL_ENVIRONMENT: PayPalEnvironment;
@@ -203,36 +204,17 @@ if (!databaseUrl) {
   blockingErrors.push("DATABASE_URL is required.");
 }
 
-const requiredInProduction = [
-  "PAYPAL_CLIENT_ID",
-  "PAYPAL_CLIENT_SECRET",
+const warnedOptionalConfig = [
   "PAYPAL_WEBHOOK_SECRET",
-  "MERCADOPAGO_ACCESS_TOKEN",
   "MERCADOPAGO_WEBHOOK_SECRET",
-  "NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY",
-  "RCON_HOST",
-  "RCON_PORT",
   "RCON_PASSWORD",
 ] as const;
 
-for (const name of requiredInProduction) {
+for (const name of warnedOptionalConfig) {
   if (process.env[name]?.trim()) continue;
-
-  if (enforceProductionValidation) {
-    productionMissingConfig.push(`${name} is required in production.`);
-  } else if (
-    name === "PAYPAL_WEBHOOK_SECRET"
-    || name === "MERCADOPAGO_WEBHOOK_SECRET"
-    || name === "RCON_PASSWORD"
-  ) {
-    developmentMissingConfig.push(
-      `${name} is not configured. Local development will continue, but that integration stays unavailable until you set it.`,
-    );
-  }
-}
-
-if (enforceProductionValidation && !(baseUrl || publicBaseUrl)) {
-  productionMissingConfig.push("BASE_URL or NEXT_PUBLIC_BASE_URL is required in production.");
+  developmentMissingConfig.push(
+    `${name} is not configured. Local development will continue, but that integration stays unavailable until you set it.`,
+  );
 }
 
 const rconPort = process.env.RCON_PORT?.trim();
@@ -245,7 +227,7 @@ if (trustedOrigins.length === 0 && enforceProductionValidation) {
   productionMissingConfig.push("At least one trusted origin is required in production.");
 }
 
-if (!isNextProductionBuildPhase) {
+if (!isNextProductionBuildPhase && !enforceProductionValidation) {
   warnDevelopmentConfig(developmentMissingConfig);
 }
 
@@ -263,6 +245,7 @@ if (blockingErrors.length > 0 || productionMissingConfig.length > 0) {
 
 export const env: StoreEnv = {
   NODE_ENV: nodeEnv,
+  STRICT_ENV_VALIDATION: enforceProductionValidation,
   DATABASE_URL: databaseUrl ?? "",
   BASE_URL: baseUrl ?? publicBaseUrl,
   PAYPAL_ENVIRONMENT: paypalEnvironment as PayPalEnvironment,

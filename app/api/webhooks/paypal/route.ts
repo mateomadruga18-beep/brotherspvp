@@ -54,6 +54,17 @@ export async function POST(request: Request) {
   if (response) return response;
 
   try {
+    if (env.STRICT_ENV_VALIDATION && !env.PAYPAL_WEBHOOK_SECRET) {
+      securityLog("error", "paypal_webhook_secret_missing", {
+        requestId: context.requestId,
+        path: context.path,
+      });
+      return serverError("PAYPAL_WEBHOOK_NOT_CONFIGURED", "Missing PAYPAL_WEBHOOK_SECRET.", {
+        request,
+        requestId: context.requestId,
+      });
+    }
+
     const isAuthorized = hasValidWebhookSecret({
       expected: env.PAYPAL_WEBHOOK_SECRET,
       headerValue: request.headers.get("x-webhook-secret"),
