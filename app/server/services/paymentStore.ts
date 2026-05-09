@@ -1,4 +1,4 @@
-import { PaymentProvider } from "@prisma/client";
+import { PaymentProvider } from "@/generated/prisma/client";
 import {
   createPaymentReference,
   findOrderIdByProviderPayment,

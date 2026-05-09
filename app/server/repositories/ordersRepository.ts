@@ -1,4 +1,4 @@
-import { OrderStatus, PaymentProvider, Prisma } from "@prisma/client";
+import { OrderStatus, PaymentProvider, Prisma } from "@/generated/prisma/client";
 import type { CartItem, Order } from "../../lib/storeTypes";
 import { prisma } from "../db/prisma";
 

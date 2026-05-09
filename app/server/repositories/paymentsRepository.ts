@@ -1,4 +1,4 @@
-import { PaymentProvider, Prisma } from "@prisma/client";
+import { PaymentProvider, Prisma } from "@/generated/prisma/client";
 import { createHash } from "node:crypto";
 import { prisma } from "../db/prisma";
 

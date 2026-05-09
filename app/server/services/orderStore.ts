@@ -1,4 +1,4 @@
-import { OrderStatus, PaymentProvider } from "@prisma/client";
+import { OrderStatus, PaymentProvider } from "@/generated/prisma/client";
 import type { CartItem } from "../../lib/storeTypes";
 import { createOrderRecord, getOrderRecord, updateOrderStatusRecord } from "../repositories/ordersRepository";
 

@@ -1,5 +1,7 @@
 generator client {
   provider = "prisma-client-js"
+  // Stable path so `prisma generate` always matches TypeScript (avoids undeployable `node_modules/.prisma` state on CI).
+  output   = "../generated/prisma/client"
 }
 
 datasource db {

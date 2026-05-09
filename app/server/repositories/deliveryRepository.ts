@@ -1,4 +1,4 @@
-import { DeliveryTaskStatus } from "@prisma/client";
+import { DeliveryTaskStatus } from "@/generated/prisma/client";
 import { prisma } from "../db/prisma";
 
 export type DeliveryTaskRecord = {
