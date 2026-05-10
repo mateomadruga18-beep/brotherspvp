@@ -22,7 +22,7 @@ async function apiPost<T>(url: string, body: unknown): Promise<ApiOk<T> | ApiErr
       ok: false,
       error: {
         code: "NETWORK_ERROR",
-        message: "Could not reach the payment service. Try again in a moment.",
+        message: "No se pudo conectar con el servicio de pago. Intenta nuevamente en un momento.",
       },
     };
   }
@@ -68,14 +68,14 @@ export function PayPalCheckoutButton({
 
         setClientId(null);
         setLoadState("error");
-        push({ title: "PayPal not configured", message: json.error.message, tone: "warning" });
+        push({ title: "PayPal no configurado", message: json.error.message, tone: "warning" });
       } catch {
         if (cancelled) return;
         setClientId(null);
         setLoadState("error");
         push({
-          title: "PayPal unavailable",
-          message: "Could not load PayPal right now. Try again in a moment.",
+          title: "PayPal no disponible",
+          message: "No se pudo cargar PayPal. Intenta nuevamente en un momento.",
           tone: "warning",
         });
       }
@@ -99,7 +99,7 @@ export function PayPalCheckoutButton({
   if (loadState === "error") {
     return (
       <button type="button" className="mc-button w-full opacity-80" disabled>
-        PayPal unavailable
+        PayPal no disponible
       </button>
     );
   }
@@ -107,7 +107,7 @@ export function PayPalCheckoutButton({
   if (!options) {
     return (
       <button type="button" className="mc-button w-full opacity-80" disabled>
-        Loading PayPal...
+        Cargando PayPal...
       </button>
     );
   }
@@ -115,7 +115,7 @@ export function PayPalCheckoutButton({
   return (
     <div className={disabled ? "pointer-events-none opacity-60" : ""}>
       <PayPalScriptProvider options={options}>
-        <div className="glass rounded-3xl p-4">
+        <div className="rounded-lg border border-white/10 bg-white/[0.055] p-4">
           <PayPalButtons
             style={{
               layout: "vertical",
@@ -128,7 +128,7 @@ export function PayPalCheckoutButton({
                 { username, items },
               );
               if (!created.ok) {
-                push({ title: "Checkout error", message: created.error.message, tone: "warning" });
+                push({ title: "Error de checkout", message: created.error.message, tone: "warning" });
                 throw new Error(created.error.message);
               }
 
@@ -140,8 +140,8 @@ export function PayPalCheckoutButton({
               const paypalOrderId = String((data as { orderID?: string })?.orderID ?? "");
               if (!orderId || !paypalOrderId) {
                 push({
-                  title: "Approval error",
-                  message: "Missing order identifiers.",
+                  title: "Error de aprobacion",
+                  message: "Faltan identificadores del pedido.",
                   tone: "warning",
                 });
                 return;
@@ -152,33 +152,33 @@ export function PayPalCheckoutButton({
                 { orderId, paypalOrderId },
               );
               if (!captured.ok) {
-                push({ title: "Payment failed", message: captured.error.message, tone: "warning" });
+                push({ title: "Pago rechazado", message: captured.error.message, tone: "warning" });
                 return;
               }
 
               push({
-                title: "Payment submitted",
-                message: "We are confirming your payment. Redirecting...",
+                title: "Pago enviado",
+                message: "Estamos confirmando tu pago. Redirigiendo...",
                 tone: "info",
               });
               onPaid({ orderId, paypalOrderId });
             }}
             onCancel={() => {
-              push({ title: "Payment cancelled", message: "No charges were made.", tone: "warning" });
+              push({ title: "Pago cancelado", message: "No se realizo ningun cobro.", tone: "warning" });
               onCancelled();
             }}
             onError={(err) => {
               push({
-                title: "PayPal error",
-                message: err instanceof Error ? err.message : "Unknown error",
+                title: "Error de PayPal",
+                message: err instanceof Error ? err.message : "Error desconocido",
                 tone: "warning",
               });
             }}
           />
           <div className="mt-2 text-xs font-semibold text-white/55">
             {environment === "live"
-              ? "Live PayPal checkout. Payments are processed securely by PayPal."
-              : "Sandbox mode. Use a PayPal Sandbox buyer account to test."}
+              ? "Checkout PayPal en vivo. PayPal procesa el pago de forma segura."
+              : "Modo sandbox. Usa una cuenta compradora de prueba de PayPal."}
           </div>
         </div>
       </PayPalScriptProvider>

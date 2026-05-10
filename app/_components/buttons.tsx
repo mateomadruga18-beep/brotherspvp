@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { getProductById } from "../lib/catalog";
 import { useCart } from "./cart";
 import { useToast } from "./toast";
-import { getProductById } from "../lib/catalog";
 
 function variantClass(variant: "primary" | "secondary" | "ghost") {
   if (variant === "secondary") return "mc-button-secondary";
@@ -32,10 +32,10 @@ export function AddToCartButton({
     if (!justAdded) return children;
     return (
       <span className="inline-flex items-center gap-2">
-        <span className="inline-grid size-5 place-items-center rounded-md bg-white/15 text-white/90">
-          ✓
+        <span className="inline-grid size-5 place-items-center rounded-md bg-white/15 text-[10px] text-white/90">
+          OK
         </span>
-        Added
+        Agregado
       </span>
     );
   }, [children, justAdded]);
@@ -46,12 +46,11 @@ export function AddToCartButton({
       className={["mc-button", variantClass(variant), className ?? ""].join(" ")}
       onClick={() => {
         add(productId, quantity);
-        const p = getProductById(productId);
-        const name = p?.name ?? "Item";
+        const product = getProductById(productId);
+        const name = product?.name ?? "Producto";
         push({
-          title: "Added to cart",
-          message:
-            quantity > 1 ? `${name} × ${quantity}` : `${name} added successfully`,
+          title: "Agregado al carrito",
+          message: quantity > 1 ? `${name} x ${quantity}` : `${name} agregado correctamente`,
           tone: "success",
         });
         setJustAdded(true);
@@ -62,4 +61,3 @@ export function AddToCartButton({
     </button>
   );
 }
-

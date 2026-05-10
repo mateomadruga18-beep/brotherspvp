@@ -7,16 +7,16 @@ export default function RanksPage() {
 
   return (
     <StoreShell
-      title="Ranks"
-      subtitle="Permanent upgrades with cosmetics and quality-of-life commands. Pick a rank and add it to your cart."
+      title="Rangos VIP"
+      subtitle="Elige tu rango permanente para BrotherSPvP. Cada rango incluye tag, multiplicador, descuento de RankUP, Armor Boost, parcelas, recursos de compra y comandos exclusivos."
     >
       <section className="container pb-14 sm:pb-16">
-        <div className="mt-2 grid gap-4 lg:grid-cols-3">
-          {ranks.map((p, idx) => (
+        <div className="grid gap-5 xl:grid-cols-2">
+          {ranks.map((product, index) => (
             <ProductCard
-              key={p.id}
-              product={p}
-              primaryCtaVariant={idx === 1 ? "primary" : idx === 2 ? "secondary" : "ghost"}
+              key={product.id}
+              product={product}
+              primaryCtaVariant={index >= ranks.length - 2 ? "secondary" : "primary"}
             />
           ))}
         </div>
@@ -24,4 +24,3 @@ export default function RanksPage() {
     </StoreShell>
   );
 }
-

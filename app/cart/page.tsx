@@ -14,22 +14,22 @@ export default function CartPage() {
   const { lines, remove, setQuantity, clear } = useCart();
 
   const enriched = lines
-    .map((l) => {
-      const product = getProductById(l.productId);
+    .map((line) => {
+      const product = getProductById(line.productId);
       if (!product) return null;
-      return { ...l, product };
+      return { ...line, product };
     })
-    .filter((x): x is NonNullable<typeof x> => Boolean(x));
+    .filter((line): line is NonNullable<typeof line> => Boolean(line));
 
   const subtotal = enriched.reduce(
-    (acc, l) => acc + l.quantity * l.product.priceUsd,
+    (acc, line) => acc + line.quantity * line.product.priceUsd,
     0,
   );
 
   return (
     <StoreShell
-      title="Cart"
-      subtitle="Review your items and adjust quantities. This is a demo checkout UI — no real payments."
+      title="Carrito"
+      subtitle="Revisa tus productos antes de pagar. Las compras se entregan al usuario de Minecraft indicado en el checkout."
       right={
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:justify-end">
           <button
@@ -38,7 +38,7 @@ export default function CartPage() {
             onClick={clear}
             disabled={enriched.length === 0}
           >
-            Clear
+            Vaciar
           </button>
           <button
             type="button"
@@ -48,24 +48,24 @@ export default function CartPage() {
               window.location.href = "/checkout";
             }}
           >
-            Checkout
+            Pagar
           </button>
         </div>
       }
     >
       <section className="container pb-14 sm:pb-16">
         {enriched.length === 0 ? (
-          <div className="glass rounded-3xl p-8 sm:p-10">
-            <div className="text-lg font-black text-white">Your cart is empty</div>
+          <div className="rounded-lg border border-white/10 bg-white/[0.055] p-8 sm:p-10">
+            <div className="text-lg font-black text-white">Tu carrito esta vacio</div>
             <div className="mt-2 text-sm leading-6 text-white/70">
-              Browse the store and add something awesome.
+              Explora la tienda y agrega el rango, llave o pack de coins que quieras comprar.
             </div>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Link className="mc-button w-full sm:w-auto" href="/store">
-                Go to store
+                Ir a la tienda
               </Link>
               <Link className="mc-button mc-button-secondary w-full sm:w-auto" href="/ranks">
-                Browse ranks
+                Ver rangos
               </Link>
             </div>
           </div>
@@ -73,69 +73,73 @@ export default function CartPage() {
           <div className="grid gap-6 lg:grid-cols-12">
             <div className="lg:col-span-8">
               <div className="space-y-4">
-                {enriched.map((l) => (
+                {enriched.map((line) => (
                   <div
-                    key={l.productId}
-                    className="group glass relative overflow-hidden rounded-3xl p-6 transition duration-300 hover:border-white/20"
+                    key={line.productId}
+                    className="group relative overflow-hidden rounded-lg border border-white/10 bg-white/[0.055] p-5 transition duration-300 hover:border-white/20"
                   >
                     <div
-                      className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${l.product.gradientClass} opacity-0 transition duration-300 group-hover:opacity-100`}
+                      className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${line.product.gradientClass} opacity-0 transition duration-300 group-hover:opacity-100`}
                     />
 
                     <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                      <div>
-                        <div className="text-xs font-semibold text-white/60">
-                          {l.product.badge ?? l.product.category.toUpperCase()}
+                      <div className="min-w-0">
+                        <div className="text-xs font-black uppercase text-white/55">
+                          {line.product.badge ?? line.product.category.toUpperCase()}
                         </div>
                         <div className="mt-1 text-lg font-black text-white">
-                          {l.product.name}
+                          {line.product.name}
                         </div>
-                        <div className="mt-1 text-sm font-semibold text-white/70">
-                          {l.product.description}
+                        <div className="mt-1 text-sm font-semibold leading-6 text-white/70">
+                          {line.product.description}
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3">
-                        <div className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-right">
-                          <div className="text-[11px] font-semibold text-white/60">
-                            Each
+                      <div className="flex flex-wrap items-center gap-3">
+                        <div className="rounded-md border border-white/10 bg-black/30 px-3 py-2 text-right">
+                          <div className="text-[11px] font-bold uppercase text-white/55">
+                            Unidad
                           </div>
                           <div className="text-base font-black text-white">
-                            {formatUsd(l.product.priceUsd)}
+                            {formatUsd(line.product.priceUsd)}
                           </div>
                         </div>
 
-                        <div className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2">
-                          <div className="text-[11px] font-semibold text-white/60">
-                            Qty
+                        <div className="rounded-md border border-white/10 bg-black/30 px-3 py-2">
+                          <div className="text-[11px] font-bold uppercase text-white/55">
+                            Cantidad
                           </div>
                           <div className="mt-1 flex items-center gap-2">
                             <button
                               type="button"
-                              className="grid size-9 place-items-center rounded-lg border border-white/10 bg-black/30 text-sm font-black text-white/85 transition hover:border-white/20 hover:bg-white/5 active:translate-y-px disabled:opacity-50"
-                              onClick={() => setQuantity(l.productId, clampQuantity(l.quantity - 1))}
-                              disabled={l.quantity <= 1}
-                              aria-label="Decrease quantity"
+                              className="grid size-9 place-items-center rounded-md border border-white/10 bg-black/30 text-sm font-black text-white/85 transition hover:border-white/20 hover:bg-white/5 active:translate-y-px disabled:opacity-50"
+                              onClick={() =>
+                                setQuantity(line.productId, clampQuantity(line.quantity - 1))
+                              }
+                              disabled={line.quantity <= 1}
+                              aria-label="Bajar cantidad"
                             >
-                              −
+                              -
                             </button>
                             <input
                               inputMode="numeric"
-                              className="w-16 rounded-lg border border-white/10 bg-black/30 px-2 py-2 text-center text-sm font-black text-white outline-none transition focus:border-white/25"
-                              value={l.quantity}
-                              onChange={(e) =>
+                              className="w-16 rounded-md border border-white/10 bg-black/30 px-2 py-2 text-center text-sm font-black text-white outline-none transition focus:border-white/25"
+                              value={line.quantity}
+                              onChange={(event) =>
                                 setQuantity(
-                                  l.productId,
-                                  clampQuantity(Number(e.target.value)),
+                                  line.productId,
+                                  clampQuantity(Number(event.target.value)),
                                 )
                               }
-                              aria-label="Quantity"
+                              aria-label="Cantidad"
                             />
                             <button
                               type="button"
-                              className="grid size-9 place-items-center rounded-lg border border-white/10 bg-black/30 text-sm font-black text-white/85 transition hover:border-white/20 hover:bg-white/5 active:translate-y-px"
-                              onClick={() => setQuantity(l.productId, clampQuantity(l.quantity + 1))}
-                              aria-label="Increase quantity"
+                              className="grid size-9 place-items-center rounded-md border border-white/10 bg-black/30 text-sm font-black text-white/85 transition hover:border-white/20 hover:bg-white/5 active:translate-y-px"
+                              onClick={() =>
+                                setQuantity(line.productId, clampQuantity(line.quantity + 1))
+                              }
+                              aria-label="Subir cantidad"
                             >
                               +
                             </button>
@@ -145,17 +149,17 @@ export default function CartPage() {
                         <button
                           type="button"
                           className="mc-button mc-button-ghost h-10 px-4 text-sm"
-                          onClick={() => remove(l.productId)}
+                          onClick={() => remove(line.productId)}
                         >
-                          Remove
+                          Quitar
                         </button>
                       </div>
                     </div>
 
                     <div className="relative mt-4 text-sm font-semibold text-white/70">
-                      Line total:{" "}
+                      Total de linea:{" "}
                       <span className="font-black text-white">
-                        {formatUsd(l.quantity * l.product.priceUsd)}
+                        {formatUsd(line.quantity * line.product.priceUsd)}
                       </span>
                     </div>
                   </div>
@@ -164,23 +168,21 @@ export default function CartPage() {
             </div>
 
             <div className="lg:col-span-4">
-              <div className="glass sticky top-24 rounded-3xl p-6">
-                <div className="text-lg font-black text-white">Summary</div>
+              <div className="sticky top-24 rounded-lg border border-white/10 bg-white/[0.055] p-5">
+                <div className="text-lg font-black text-white">Resumen</div>
                 <div className="mt-4 space-y-3">
                   <div className="flex items-center justify-between text-sm font-semibold text-white/70">
                     <span>Subtotal</span>
                     <span className="font-black text-white">{formatUsd(subtotal)}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm font-semibold text-white/70">
-                    <span>Fees</span>
+                    <span>Cargos extra</span>
                     <span className="font-black text-white">{formatUsd(0)}</span>
                   </div>
                   <div className="h-px bg-white/10" />
                   <div className="flex items-center justify-between text-sm font-semibold text-white/70">
                     <span>Total</span>
-                    <span className="text-lg font-black text-white">
-                      {formatUsd(subtotal)}
-                    </span>
+                    <span className="text-lg font-black text-white">{formatUsd(subtotal)}</span>
                   </div>
                 </div>
 
@@ -191,15 +193,15 @@ export default function CartPage() {
                     window.location.href = "/checkout";
                   }}
                 >
-                  Checkout
+                  Ir a pagar
                 </button>
 
                 <Link className="mc-button mc-button-ghost mt-3 w-full" href="/store">
-                  Continue shopping
+                  Seguir comprando
                 </Link>
 
-                <div className="mt-4 text-xs text-white/55">
-                  Delivery happens automatically after checkout (demo).
+                <div className="mt-4 text-xs leading-5 text-white/55">
+                  La entrega se procesa automaticamente cuando el pago queda confirmado.
                 </div>
               </div>
             </div>
@@ -209,4 +211,3 @@ export default function CartPage() {
     </StoreShell>
   );
 }
-

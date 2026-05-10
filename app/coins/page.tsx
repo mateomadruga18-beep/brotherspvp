@@ -7,17 +7,16 @@ export default function CoinsPage() {
 
   return (
     <StoreShell
-      title="Coins"
-      subtitle="Stock up for auctions, cosmetics, and bundles. Choose a pack and add it to your cart."
+      title="Monedas"
+      subtitle="Recarga coins para subastas, cosmeticos y compras dentro del servidor. Elige un pack y agregalo al carrito."
     >
       <section className="container pb-14 sm:pb-16">
         <div className="grid gap-4 md:grid-cols-3">
-          {coins.map((p) => (
-            <ProductCard key={p.id} product={p} primaryCtaVariant="primary" />
+          {coins.map((product) => (
+            <ProductCard key={product.id} product={product} primaryCtaVariant="primary" />
           ))}
         </div>
       </section>
     </StoreShell>
   );
 }
-

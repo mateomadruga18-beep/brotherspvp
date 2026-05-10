@@ -1,5 +1,18 @@
 export type ProductCategory = "rank" | "crate" | "coin";
 
+export type ProductStat = {
+  label: string;
+  value: string;
+};
+
+export type ProductTheme = {
+  accent: string;
+  accent2: string;
+  text: string;
+  glow: string;
+  mark: string;
+};
+
 export type Product = {
   id: string;
   category: ProductCategory;
@@ -9,6 +22,10 @@ export type Product = {
   badge?: string;
   gradientClass: string;
   perks?: string[];
+  stats?: ProductStat[];
+  rewards?: string[];
+  commands?: string[];
+  theme?: ProductTheme;
 };
 
 export type CartItem = {

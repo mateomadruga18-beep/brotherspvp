@@ -19,7 +19,7 @@ async function apiPost<T>(url: string, body: unknown): Promise<ApiOk<T> | ApiErr
       ok: false,
       error: {
         code: "NETWORK_ERROR",
-        message: "Could not reach Mercado Pago right now. Try again in a moment.",
+        message: "No se pudo conectar con Mercado Pago. Intenta nuevamente en un momento.",
       },
     };
   }
@@ -56,7 +56,7 @@ export function MercadoPagoCheckoutButton({
       );
 
       if (!created.ok) {
-        push({ title: "Mercado Pago error", message: created.error.message, tone: "warning" });
+        push({ title: "Error de Mercado Pago", message: created.error.message, tone: "warning" });
         return;
       }
 
@@ -73,7 +73,7 @@ export function MercadoPagoCheckoutButton({
       disabled={disabled || loading}
       onClick={startCheckout}
     >
-      {loading ? "Creating Mercado Pago preference..." : "Pay with Mercado Pago"}
+      {loading ? "Creando checkout..." : "Pagar con Mercado Pago"}
     </button>
   );
 }

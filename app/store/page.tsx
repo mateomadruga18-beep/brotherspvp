@@ -10,84 +10,78 @@ export default function StorePage() {
 
   return (
     <StoreShell
-      title="Store"
-      subtitle="Browse ranks, crate keys, and coins. Add items to your cart — instant delivery after checkout (demo)."
+      title="Tienda BrotherSPvP"
+      subtitle="Compra rangos, llaves y monedas con entrega automatica despues de confirmar el pago. Los rangos ya incluyen todos sus beneficios y recompensas."
       right={
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:justify-end">
           <Link className="mc-button mc-button-ghost h-10 px-4 text-sm" href="/cart">
-            View cart
+            Ver carrito
           </Link>
           <Link className="mc-button h-10 px-4 text-sm" href="/ranks">
-            Browse ranks
+            Ver rangos
           </Link>
         </div>
       }
     >
       <section className="container pb-14 sm:pb-16">
-        <div className="grid gap-10">
+        <div className="grid gap-12">
           <div>
-            <div className="flex items-end justify-between gap-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <h2 className="text-xl font-black tracking-tight text-white sm:text-2xl">
-                  Featured ranks
-                </h2>
-                <p className="mt-2 max-w-2xl text-sm text-white/65 sm:text-base">
-                  Hypixel-inspired presentation with crisp gradients and smooth hover motion.
+                <h2 className="text-2xl font-black text-white">Rangos permanentes</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-white/65 sm:text-base">
+                  Diez rangos con identidad propia, colores del servidor y beneficios ordenados para comparar rapido.
                 </p>
               </div>
-              <Link className="hidden text-sm font-semibold text-white/70 transition hover:text-white sm:block" href="/ranks">
-                See all →
+              <Link className="text-sm font-semibold text-white/70 transition hover:text-white" href="/ranks">
+                Comparar todos
               </Link>
             </div>
-            <div className="mt-6 grid gap-4 lg:grid-cols-3">
-              {ranks.map((p, idx) => (
+            <div className="mt-6 grid gap-5 xl:grid-cols-2">
+              {ranks.map((product, index) => (
                 <ProductCard
-                  key={p.id}
-                  product={p}
-                  primaryCtaVariant={idx === 1 ? "primary" : idx === 2 ? "secondary" : "ghost"}
+                  key={product.id}
+                  product={product}
+                  primaryCtaVariant={index >= ranks.length - 2 ? "secondary" : "primary"}
                 />
               ))}
             </div>
           </div>
 
           <div>
-            <div className="flex items-end justify-between gap-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <h2 className="text-xl font-black tracking-tight text-white sm:text-2xl">
-                  Crates
-                </h2>
-                <p className="mt-2 max-w-2xl text-sm text-white/65 sm:text-base">
-                  Limited drops and rare cosmetics. Keys deliver instantly (demo).
+                <h2 className="text-2xl font-black text-white">Llaves de cajas</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-white/65 sm:text-base">
+                  Drops limitados, cosmeticos y premios para progresar dentro del servidor.
                 </p>
               </div>
-              <Link className="hidden text-sm font-semibold text-white/70 transition hover:text-white sm:block" href="/crates">
-                See all →
+              <Link className="text-sm font-semibold text-white/70 transition hover:text-white" href="/crates">
+                Ver cajas
               </Link>
             </div>
             <div className="mt-6 grid gap-4 md:grid-cols-2">
-              {crates.map((p) => (
-                <ProductCard key={p.id} product={p} primaryCtaVariant="primary" />
+              {crates.map((product) => (
+                <ProductCard key={product.id} product={product} primaryCtaVariant="primary" />
               ))}
             </div>
           </div>
 
           <div>
-            <div className="flex items-end justify-between gap-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <h2 className="text-xl font-black tracking-tight text-white sm:text-2xl">
-                  Coins
-                </h2>
-                <p className="mt-2 max-w-2xl text-sm text-white/65 sm:text-base">
-                  Top up fast for auctions, cosmetics, and bundles.
+                <h2 className="text-2xl font-black text-white">Monedas</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-white/65 sm:text-base">
+                  Packs de coins para subastas, economia y compras frecuentes.
                 </p>
               </div>
-              <Link className="hidden text-sm font-semibold text-white/70 transition hover:text-white sm:block" href="/coins">
-                See all →
+              <Link className="text-sm font-semibold text-white/70 transition hover:text-white" href="/coins">
+                Ver monedas
               </Link>
             </div>
             <div className="mt-6 grid gap-4 md:grid-cols-3">
-              {coins.map((p) => (
-                <ProductCard key={p.id} product={p} primaryCtaVariant="primary" />
+              {coins.map((product) => (
+                <ProductCard key={product.id} product={product} primaryCtaVariant="primary" />
               ))}
             </div>
           </div>
@@ -96,4 +90,3 @@ export default function StorePage() {
     </StoreShell>
   );
 }
-

@@ -2,7 +2,7 @@
 
 :root {
   color-scheme: dark;
-  --background: #070a12;
+  --background: #07080b;
   --foreground: #e8eefc;
   --muted: rgba(232, 238, 252, 0.72);
   --card: rgba(255, 255, 255, 0.06);
@@ -22,7 +22,7 @@ body {
 }
 
 ::selection {
-  background: rgba(139, 92, 246, 0.35);
+  background: rgba(34, 197, 94, 0.32);
 }
 
 .container {
@@ -84,9 +84,9 @@ body {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(1200px 600px at 20% 10%, rgba(59, 130, 246, 0.22), transparent 55%),
-    radial-gradient(900px 500px at 80% 15%, rgba(168, 85, 247, 0.18), transparent 55%),
-    radial-gradient(1000px 650px at 50% 80%, rgba(16, 185, 129, 0.12), transparent 55%),
+    linear-gradient(135deg, rgba(34, 197, 94, 0.14), transparent 32%),
+    linear-gradient(225deg, rgba(255, 216, 77, 0.12), transparent 36%),
+    linear-gradient(0deg, rgba(239, 43, 43, 0.08), transparent 48%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 40%);
   filter: blur(0px);
   animation: bg-pan 14s ease-in-out infinite;
@@ -171,4 +171,87 @@ body {
 
 .mc-button-ghost::after {
   opacity: 0.55;
+}
+
+.product-card {
+  backdrop-filter: blur(14px);
+}
+
+.rank-art {
+  position: relative;
+  min-height: 9.75rem;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--rank-accent) 42%, rgba(255, 255, 255, 0.1));
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--rank-accent) 28%, transparent), transparent 42%),
+    linear-gradient(225deg, color-mix(in srgb, var(--rank-accent-2) 22%, transparent), transparent 44%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+    #090d16;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.5) inset,
+    0 24px 70px var(--rank-glow);
+}
+
+.rank-art-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.26;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.18) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.14) 1px, transparent 1px);
+  background-size: 26px 26px;
+  mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.85), transparent 82%);
+}
+
+.rank-crest {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  display: grid;
+  height: 5.4rem;
+  width: 5.4rem;
+  place-items: center;
+  transform: rotate(45deg);
+  border: 1px solid color-mix(in srgb, var(--rank-accent) 60%, white 8%);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--rank-accent) 32%, #05070c), #05070c 62%),
+    #05070c;
+  box-shadow:
+    0 0 0 0.45rem rgba(0, 0, 0, 0.2),
+    0 18px 45px var(--rank-glow);
+}
+
+.rank-crest-inner {
+  transform: rotate(-45deg);
+  color: var(--rank-text);
+  font-size: 1.05rem;
+  font-weight: 950;
+  text-shadow: 0 0 18px var(--rank-glow);
+}
+
+.rank-art-copy {
+  position: absolute;
+  left: 1rem;
+  right: 7.2rem;
+  bottom: 1rem;
+}
+
+.rank-art-title {
+  margin-top: 0.2rem;
+  color: var(--rank-text);
+  font-size: 1.75rem;
+  font-weight: 950;
+  line-height: 1;
+  text-shadow: 0 0 18px var(--rank-glow);
+  word-break: break-word;
+}
+
+.rank-art-band {
+  position: absolute;
+  left: -12%;
+  right: -12%;
+  bottom: 0;
+  height: 0.35rem;
+  background: linear-gradient(90deg, transparent, var(--rank-accent), var(--rank-accent-2), transparent);
 }

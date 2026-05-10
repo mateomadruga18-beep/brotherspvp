@@ -10,8 +10,8 @@ export default function CheckoutCancelPage() {
 
   useEffect(() => {
     push({
-      title: "Checkout cancelled",
-      message: "Your cart is still saved.",
+      title: "Checkout cancelado",
+      message: "Tu carrito sigue guardado.",
       tone: "warning",
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -19,25 +19,25 @@ export default function CheckoutCancelPage() {
 
   return (
     <StoreShell
-      title="Checkout cancelled"
-      subtitle="No payment was processed. You can continue shopping or return to checkout."
+      title="Checkout cancelado"
+      subtitle="No se proceso ningun pago. Puedes seguir comprando o volver al checkout."
       right={
         <Link className="mc-button h-10 px-4 text-sm" href="/checkout">
-          Return to checkout
+          Volver al checkout
         </Link>
       }
     >
       <section className="container pb-14 sm:pb-16">
-        <div className="glass rounded-3xl p-8 sm:p-10">
+        <div className="rounded-lg border border-white/10 bg-white/[0.055] p-8 sm:p-10">
           <div className="text-sm font-semibold text-white/70">
-            If you meant to pay, pick a method and confirm again.
+            Si querias pagar, selecciona un metodo de pago y confirma nuevamente.
           </div>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Link className="mc-button w-full sm:w-auto" href="/cart">
-              View cart
+              Ver carrito
             </Link>
             <Link className="mc-button mc-button-ghost w-full sm:w-auto" href="/store">
-              Continue shopping
+              Seguir comprando
             </Link>
           </div>
         </div>
@@ -45,4 +45,3 @@ export default function CheckoutCancelPage() {
     </StoreShell>
   );
 }
-

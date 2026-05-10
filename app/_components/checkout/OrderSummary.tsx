@@ -1,4 +1,3 @@
-import React from "react";
 import Link from "next/link";
 import { formatUsd, getProductById } from "../../lib/catalog";
 
@@ -16,43 +15,45 @@ export function OrderSummary({
   compact?: boolean;
 }) {
   return (
-    <div className="glass rounded-3xl p-6">
+    <div className="rounded-lg border border-white/10 bg-white/[0.055] p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="text-sm font-black text-white">Order summary</div>
+          <div className="text-sm font-black text-white">Resumen del pedido</div>
           <div className="mt-1 text-xs font-semibold text-white/60">
-            Instant delivery after payment confirmation.
+            Entrega automatica despues de confirmar el pago.
           </div>
         </div>
         {!compact && (
           <Link className="text-xs font-semibold text-white/70 transition hover:text-white" href="/cart">
-            Edit cart →
+            Editar carrito
           </Link>
         )}
       </div>
 
-      <div className="mt-5 space-y-3">
-        {lines.map((l) => {
-          const p = getProductById(l.productId);
-          if (!p) return null;
-          return (
-            <div
-              key={l.productId}
-              className="flex items-start justify-between gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3"
-            >
-              <div>
-                <div className="text-sm font-black text-white">{p.name}</div>
-                <div className="mt-0.5 text-xs font-semibold text-white/60">
-                  Qty {l.quantity}
+      {lines.length > 0 ? (
+        <div className="mt-5 space-y-3">
+          {lines.map((line) => {
+            const product = getProductById(line.productId);
+            if (!product) return null;
+            return (
+              <div
+                key={line.productId}
+                className="flex items-start justify-between gap-3 rounded-md border border-white/10 bg-black/25 px-4 py-3"
+              >
+                <div>
+                  <div className="text-sm font-black text-white">{product.name}</div>
+                  <div className="mt-0.5 text-xs font-semibold text-white/60">
+                    Cantidad {line.quantity}
+                  </div>
+                </div>
+                <div className="text-sm font-black text-white">
+                  {formatUsd(product.priceUsd * line.quantity)}
                 </div>
               </div>
-              <div className="text-sm font-black text-white">
-                {formatUsd(p.priceUsd * l.quantity)}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      ) : null}
 
       <div className="mt-5 space-y-3">
         <div className="flex items-center justify-between text-sm font-semibold text-white/70">
@@ -60,7 +61,7 @@ export function OrderSummary({
           <span className="font-black text-white">{formatUsd(subtotalUsd)}</span>
         </div>
         <div className="flex items-center justify-between text-sm font-semibold text-white/70">
-          <span>Fees</span>
+          <span>Cargos extra</span>
           <span className="font-black text-white">{formatUsd(0)}</span>
         </div>
         <div className="h-px bg-white/10" />
@@ -72,4 +73,3 @@ export function OrderSummary({
     </div>
   );
 }
-

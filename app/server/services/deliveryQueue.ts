@@ -21,7 +21,13 @@ const MAX_ATTEMPTS = 5;
 const BASE_RETRY_MS = 5000;
 const ALLOWED_RANKS = {
   VIP: "vip",
-  "VIP+": "vipplus",
+  NEMESIS: "nemesis",
+  APEX: "apex",
+  VORTEX: "vortex",
+  EON: "eon",
+  OBLIVION: "oblivion",
+  ZENITH: "zenith",
+  NYX: "nyx",
   BROTHERS: "brothers",
   "BROTHERS+": "brothersplus",
 } as const;
@@ -46,7 +52,7 @@ function buildRankCommand(productName: string, username: string) {
 
 function validateLuckPermsCommand(command: string) {
   const trimmed = command.trim();
-  const match = /^lp user ([A-Za-z0-9_]{3,16}) parent add (vip|vipplus|brothers|brothersplus)$/i.exec(
+  const match = /^lp user ([A-Za-z0-9_]{3,16}) parent add (vip|nemesis|apex|vortex|eon|oblivion|zenith|nyx|brothers|brothersplus)$/i.exec(
     trimmed,
   );
   if (!match) {
