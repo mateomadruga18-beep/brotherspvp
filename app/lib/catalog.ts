@@ -385,9 +385,7 @@ const crateProducts: Product[] = [
     },
     visual: { kind: "crate", label: "BROTHERS", detail: "x7 llaves" },
     rewards: ["7 llaves BROTHERS", "Crate premium del servidor", "Entrega automatica al usuario"],
-    commands: ["/crate give p Brothers 7 %player%"],
     deliveryCommands: ["crate give p Brothers 7 %player%"],
-    perks: ["x7 llaves", "Colores naranja y dorado", "Entrega por comando"],
   },
 ];
 
@@ -417,9 +415,7 @@ const exclusiveProducts: Product[] = [
       "Esencias: 5M",
       "Puntos gang: +5 por jugador",
     ],
-    commands: ["/kit give bundle5 %player%"],
     deliveryCommands: ["kit give bundle5 %player%"],
-    perks: ["x10 Bundle Item Super", "Recursos masivos", "Boost temporal"],
   },
   {
     id: "exclusive_premium_lootbox_x24",
@@ -443,9 +439,7 @@ const exclusiveProducts: Product[] = [
       "Cooldown de apertura: 1 segundo",
       "Pack total: x24 Premium Lootbox",
     ],
-    commands: ["/lootbox give %player% Premium 24"],
     deliveryCommands: ["lootbox give %player% Premium 24"],
-    perks: ["x24 Premium Lootbox", "4 a 10 premios", "Cooldown rapido"],
   },
   {
     id: "exclusive_boosteritem_x1",
@@ -468,9 +462,7 @@ const exclusiveProducts: Product[] = [
       "+1% de ganancias en todas las economias disponibles",
       "Se aplica desde el item dentro del servidor",
     ],
-    commands: ["/armadura give %player% boosteritem 1"],
     deliveryCommands: ["armadura give %player% boosteritem 1"],
-    perks: ["Mejora de armadura", "Ganancias aumentadas", "x1 BoosterItem"],
   },
   {
     id: "exclusive_azada_xp_500k",
@@ -493,9 +485,7 @@ const exclusiveProducts: Product[] = [
       "Sube niveles mas rapido",
       "Ideal para progresar en farmeo",
     ],
-    commands: ["/azada add %player% 500000"],
     deliveryCommands: ["azada add %player% 500000"],
-    perks: ["500K XP", "Progreso rapido", "Entrega directa"],
   },
   {
     id: "exclusive_money_multiplier_20x",
@@ -504,7 +494,7 @@ const exclusiveProducts: Product[] = [
     description: "Multiplicador permanente de dinero para mejorar tus ganancias del servidor.",
     priceUsd: 13.99,
     available: false,
-    unavailableReason: "Falta configurar el comando exacto de entrega.",
+    unavailableReason: "Producto pendiente de activar.",
     badge: "Pendiente",
     gradientClass: "from-emerald-400/24 via-yellow-300/14 to-transparent",
     theme: {
@@ -518,10 +508,8 @@ const exclusiveProducts: Product[] = [
     rewards: [
       "20x multiplicador de dinero permanente",
       "Mejora las ganancias economicas",
-      "Pendiente de comando para activar compra automatica",
+      "Compra automatica pendiente de activar",
     ],
-    commands: ["Comando pendiente"],
-    perks: ["20x dinero", "Permanente", "Pendiente de comando"],
   },
   {
     id: "exclusive_ultracosmetics_access",
@@ -548,9 +536,7 @@ const exclusiveProducts: Product[] = [
       "Emotes, sombreros, efectos y particulas",
       "Efectos de proyectiles y efectos al morir",
     ],
-    commands: ["/lp user %player% permission set ultracosmetics.allcosmetics"],
     deliveryCommands: ["lp user %player% permission set ultracosmetics.allcosmetics"],
-    perks: ["Todos los cosmeticos", "/uc desbloqueado", "Pendiente de precio"],
   },
 ];
 

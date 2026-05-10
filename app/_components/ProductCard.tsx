@@ -135,7 +135,7 @@ export function ProductCard({
             </section>
           ) : null}
 
-          {product.commands?.length ? (
+          {product.category === "rank" && product.commands?.length ? (
             <section className="mt-5 border-t border-white/10 pt-4">
               <div className="text-xs font-black uppercase text-[var(--rank-text)]">
                 Comandos y beneficios
