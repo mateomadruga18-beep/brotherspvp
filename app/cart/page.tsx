@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { StoreShell } from "../_components/StoreShell";
 import { useCart } from "../_components/cart";
-import { formatUsd, getProductById } from "../lib/catalog";
+import { formatUsd, getProductById, getProductPriceLabel } from "../lib/catalog";
 
 function clampQuantity(value: number) {
   if (!Number.isFinite(value)) return 1;
@@ -16,7 +16,7 @@ export default function CartPage() {
   const enriched = lines
     .map((line) => {
       const product = getProductById(line.productId);
-      if (!product) return null;
+      if (!product || product.available === false) return null;
       return { ...line, product };
     })
     .filter((line): line is NonNullable<typeof line> => Boolean(line));
@@ -58,7 +58,7 @@ export default function CartPage() {
           <div className="rounded-lg border border-white/10 bg-white/[0.055] p-8 sm:p-10">
             <div className="text-lg font-black text-white">Tu carrito esta vacio</div>
             <div className="mt-2 text-sm leading-6 text-white/70">
-              Explora la tienda y agrega el rango, llave o pack de coins que quieras comprar.
+              Explora la tienda y agrega el rango, llave o exclusivo que quieras comprar.
             </div>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Link className="mc-button w-full sm:w-auto" href="/store">
@@ -101,7 +101,7 @@ export default function CartPage() {
                             Unidad
                           </div>
                           <div className="text-base font-black text-white">
-                            {formatUsd(line.product.priceUsd)}
+                            {getProductPriceLabel(line.product)}
                           </div>
                         </div>
 

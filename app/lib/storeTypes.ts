@@ -1,4 +1,4 @@
-export type ProductCategory = "rank" | "crate" | "coin";
+export type ProductCategory = "rank" | "crate" | "exclusive";
 
 export type ProductStat = {
   label: string;
@@ -13,19 +13,41 @@ export type ProductTheme = {
   mark: string;
 };
 
+export type ProductVisualKind =
+  | "rank"
+  | "crate"
+  | "bundle"
+  | "lootbox"
+  | "booster"
+  | "xp"
+  | "money"
+  | "cosmetics";
+
+export type ProductVisual = {
+  kind: ProductVisualKind;
+  label: string;
+  detail?: string;
+};
+
 export type Product = {
   id: string;
   category: ProductCategory;
   name: string;
   description: string;
   priceUsd: number;
+  priceLabel?: string;
+  available?: boolean;
+  unavailableReason?: string;
   badge?: string;
   gradientClass: string;
   perks?: string[];
   stats?: ProductStat[];
   rewards?: string[];
   commands?: string[];
+  deliveryCommands?: string[];
   theme?: ProductTheme;
+  visual?: ProductVisual;
+  featured?: boolean;
 };
 
 export type CartItem = {

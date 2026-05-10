@@ -19,18 +19,9 @@ let bootstrapped = false;
 
 const MAX_ATTEMPTS = 5;
 const BASE_RETRY_MS = 5000;
-const ALLOWED_RANKS = {
-  VIP: "vip",
-  NEMESIS: "nemesis",
-  APEX: "apex",
-  VORTEX: "vortex",
-  EON: "eon",
-  OBLIVION: "oblivion",
-  ZENITH: "zenith",
-  NYX: "nyx",
-  BROTHERS: "brothers",
-  "BROTHERS+": "brothersplus",
-} as const;
+const INVERTED_EXCLAMATION = "\u00a1";
+const BROADCAST_TEMPLATE =
+  `bc &A&lSHOP &7| &e&L${INVERTED_EXCLAMATION}El jugador &a&l%player% &e&lha hecho una compra en la tienda &d&lshop.brotherspvp.net&e&l muchas gracias!`;
 
 function now() {
   return Date.now();
@@ -43,28 +34,49 @@ function log(level: "info" | "warn" | "error", message: string, data: Record<str
   return console.info("[delivery]", payload);
 }
 
-function buildRankCommand(productName: string, username: string) {
-  const normalized = productName.toUpperCase();
-  const rank = ALLOWED_RANKS[normalized as keyof typeof ALLOWED_RANKS];
-  if (!rank) return null;
-  return `lp user ${username} parent add ${rank}`;
+function normalizeConsoleCommand(command: string) {
+  return command.trim().replace(/^\/+/, "");
 }
 
-function validateLuckPermsCommand(command: string) {
-  const trimmed = command.trim();
-  const match = /^lp user ([A-Za-z0-9_]{3,16}) parent add (vip|nemesis|apex|vortex|eon|oblivion|zenith|nyx|brothers|brothersplus)$/i.exec(
-    trimmed,
-  );
-  if (!match) {
-    return { ok: false as const, reason: "Invalid LuckPerms command." };
+function applyPlayerTemplate(template: string, username: string) {
+  return normalizeConsoleCommand(template.replaceAll("%player%", username));
+}
+
+function buildBroadcastCommand(username: string) {
+  return applyPlayerTemplate(BROADCAST_TEMPLATE, username);
+}
+
+function validateDeliveryCommand(command: string) {
+  const trimmed = normalizeConsoleCommand(command);
+  const usernamePattern = "([A-Za-z0-9_]{3,16})";
+
+  const patterns = [
+    new RegExp(`^lp user ${usernamePattern} group add (vip|nemesis|apex|vortex|eon|oblivion|zenith|nyx|brothers|brothersplus)$`, "i"),
+    new RegExp(`^lp user ${usernamePattern} permission set ultracosmetics\\.allcosmetics$`, "i"),
+    new RegExp(`^crate give p Brothers 7 ${usernamePattern}$`, "i"),
+    new RegExp(`^kit give bundle5 ${usernamePattern}$`, "i"),
+    new RegExp(`^lootbox give ${usernamePattern} Premium 24$`, "i"),
+    new RegExp(`^armadura give ${usernamePattern} boosteritem 1$`, "i"),
+    new RegExp(`^azada add ${usernamePattern} 500000$`, "i"),
+    new RegExp(
+      `^bc &A&lSHOP &7\\| &e&L${INVERTED_EXCLAMATION}El jugador &a&l${usernamePattern} &e&lha hecho una compra en la tienda &d&lshop\\.brotherspvp\\.net&e&l muchas gracias!$`,
+      "i",
+    ),
+  ];
+
+  for (const pattern of patterns) {
+    const match = pattern.exec(trimmed);
+    if (!match) continue;
+
+    const username = validateMinecraftUsername(match[1]);
+    if (!username.ok) {
+      return { ok: false as const, reason: username.reason };
+    }
+
+    return { ok: true as const, value: trimmed };
   }
 
-  const username = validateMinecraftUsername(match[1]);
-  if (!username.ok) {
-    return { ok: false as const, reason: username.reason };
-  }
-
-  return { ok: true as const, value: trimmed };
+  return { ok: false as const, reason: "Invalid delivery command." };
 }
 
 function delayForAttempt(attempt: number) {
@@ -94,7 +106,7 @@ async function processTask(task: DeliveryTaskRecord) {
   });
 
   try {
-    const command = validateLuckPermsCommand(task.command);
+    const command = validateDeliveryCommand(task.command);
     if (!command.ok) {
       throw new Error(command.reason);
     }
@@ -172,7 +184,9 @@ export async function enqueueOrderDelivery(order: Order) {
     return;
   }
 
-  const uniqueCommands = new Set<string>();
+  const deliveryCommands: Array<{ id: string; command: string }> = [];
+  let hasProductDelivery = false;
+
   for (const line of order.items) {
     const product = getProductById(line.productId);
     if (!product) {
@@ -183,28 +197,62 @@ export async function enqueueOrderDelivery(order: Order) {
       continue;
     }
 
-    const command = buildRankCommand(product.name, username.value);
-    if (!command) continue;
-    uniqueCommands.add(command);
+    if (product.available === false) {
+      log("warn", "Unavailable product in paid order, skipping delivery", {
+        orderId: order.id,
+        productId: product.id,
+      });
+      continue;
+    }
+
+    const templates = product.deliveryCommands ?? [];
+    if (templates.length === 0) {
+      log("warn", "Product has no delivery commands", {
+        orderId: order.id,
+        productId: product.id,
+      });
+      continue;
+    }
+
+    const repeats = product.category === "rank" ? 1 : line.quantity;
+    for (let copy = 0; copy < repeats; copy += 1) {
+      for (let index = 0; index < templates.length; index += 1) {
+        deliveryCommands.push({
+          id: `${order.id}:${product.id}:${copy}:${index}`,
+          command: applyPlayerTemplate(templates[index], username.value),
+        });
+      }
+    }
+    hasProductDelivery = true;
   }
 
-  for (const command of uniqueCommands) {
-    const taskId = `${order.id}:${command}`;
+  if (hasProductDelivery) {
+    deliveryCommands.push({
+      id: `${order.id}:broadcast`,
+      command: buildBroadcastCommand(username.value),
+    });
+  }
+
+  for (const task of deliveryCommands) {
     const existing = await upsertDeliveryTask({
-      id: taskId,
+      id: task.id,
       orderId: order.id,
       username: username.value,
-      command,
+      command: task.command,
     });
     if (existing.status === "delivered") {
       log("info", "Skipped duplicate delivery enqueue", {
         orderId: order.id,
-        taskId,
+        taskId: task.id,
         status: existing.status,
       });
       continue;
     }
-    log("info", "Enqueued delivery task", { orderId: order.id, taskId, command });
+    log("info", "Enqueued delivery task", {
+      orderId: order.id,
+      taskId: task.id,
+      command: task.command,
+    });
   }
 
   void processQueue();

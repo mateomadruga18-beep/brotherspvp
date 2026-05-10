@@ -46,8 +46,12 @@ export function validateCartItems(items: unknown) {
       return { ok: false as const, reason: "Invalid product id." };
     }
 
-    if (!getProductById(productId)) {
+    const product = getProductById(productId);
+    if (!product) {
       return { ok: false as const, reason: "Unknown product in cart." };
+    }
+    if (product.available === false) {
+      return { ok: false as const, reason: `${product.name} is not available yet.` };
     }
 
     const quantity = Number((it as { quantity?: unknown }).quantity);

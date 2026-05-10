@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "BrotherSPvP - Tienda Minecraft",
-  description: "Tienda oficial de rangos, llaves y monedas para BrotherSPvP.",
+  description: "Tienda oficial de rangos, llaves y exclusivos para BrotherSPvP.",
 };
 
 export default function RootLayout({

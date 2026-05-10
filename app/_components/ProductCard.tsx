@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import type { Product } from "../lib/catalog";
-import { formatUsd } from "../lib/catalog";
+import { getProductPriceLabel } from "../lib/catalog";
 import { AddToCartButton } from "./buttons";
 
 function productTone(product: Product) {
@@ -18,16 +18,53 @@ function RankArtwork({ product }: { product: Product }) {
   return (
     <div className="rank-art" aria-hidden="true">
       <div className="rank-art-grid" />
-      <div className="rank-crest">
-        <div className="rank-crest-inner">{product.theme?.mark ?? product.name.slice(0, 2)}</div>
+      <div className="rank-banner">
+        <span>{product.name}</span>
+      </div>
+      <div className="rank-character">
+        <div className="rank-character-head" />
+        <div className="rank-character-body" />
+        <div className="rank-character-arm rank-character-arm-left" />
+        <div className="rank-character-arm rank-character-arm-right" />
+        <div className="rank-character-leg rank-character-leg-left" />
+        <div className="rank-character-leg rank-character-leg-right" />
       </div>
       <div className="rank-art-copy">
-        <div className="text-[11px] font-black uppercase text-white/55">Rango permanente</div>
         <div className="rank-art-title">{product.name}</div>
+        <div className="rank-art-subtitle">RANGO PERMANENTE</div>
       </div>
       <div className="rank-art-band" />
     </div>
   );
+}
+
+function PackageArtwork({ product }: { product: Product }) {
+  const visual = product.visual;
+  const kind = visual?.kind ?? product.category;
+
+  return (
+    <div className={`package-art package-art-${kind}`} aria-hidden="true">
+      <div className="package-art-grid" />
+      <div className="package-shine" />
+      <div className="package-icon">
+        <div className="package-icon-core">
+          <span>{product.theme?.mark ?? product.name.slice(0, 2)}</span>
+        </div>
+      </div>
+      <div className="package-art-copy">
+        <div className="package-art-title">{visual?.label ?? product.name}</div>
+        {visual?.detail ? <div className="package-art-detail">{visual.detail}</div> : null}
+      </div>
+      <div className="rank-art-band" />
+    </div>
+  );
+}
+
+function ProductArtwork({ product }: { product: Product }) {
+  if (product.category === "rank") {
+    return <RankArtwork product={product} />;
+  }
+  return <PackageArtwork product={product} />;
 }
 
 export function ProductCard({
@@ -37,14 +74,11 @@ export function ProductCard({
   product: Product;
   primaryCtaVariant?: "primary" | "secondary" | "ghost";
 }) {
-  const isRank = product.category === "rank";
+  const isAvailable = product.available !== false;
 
   return (
     <article
-      className={[
-        "product-card group relative overflow-hidden rounded-lg border border-white/10 bg-white/[0.055] p-4 shadow-[0_24px_80px_rgba(0,0,0,0.28)] transition duration-300 hover:-translate-y-1 hover:border-white/20",
-        isRank ? "product-card-rank" : "",
-      ].join(" ")}
+      className="product-card group relative overflow-hidden rounded-lg border border-white/10 bg-white/[0.055] p-4 shadow-[0_24px_80px_rgba(0,0,0,0.28)] transition duration-300 hover:-translate-y-1 hover:border-white/20"
       style={productTone(product)}
     >
       <div
@@ -52,9 +86,9 @@ export function ProductCard({
       />
 
       <div className="relative">
-        {isRank && <RankArtwork product={product} />}
+        <ProductArtwork product={product} />
 
-        <div className={isRank ? "mt-4" : ""}>
+        <div className="mt-4">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
               <div className="text-xs font-black uppercase text-white/55">
@@ -70,7 +104,7 @@ export function ProductCard({
 
             <div className="shrink-0 rounded-md border border-white/10 bg-black/30 px-3 py-2 text-right">
               <div className="text-[11px] font-bold uppercase text-white/55">Precio</div>
-              <div className="text-base font-black text-white">{formatUsd(product.priceUsd)}</div>
+              <div className="text-base font-black text-white">{getProductPriceLabel(product)}</div>
             </div>
           </div>
 
@@ -88,7 +122,7 @@ export function ProductCard({
           {product.rewards?.length ? (
             <section className="mt-5 border-t border-white/10 pt-4">
               <div className="text-xs font-black uppercase text-[var(--rank-text)]">
-                Recursos al comprar
+                Incluye
               </div>
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 {product.rewards.map((reward) => (
@@ -104,7 +138,7 @@ export function ProductCard({
           {product.commands?.length ? (
             <section className="mt-5 border-t border-white/10 pt-4">
               <div className="text-xs font-black uppercase text-[var(--rank-text)]">
-                Comandos y beneficios unicos
+                Comandos y beneficios
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
                 {product.commands.map((command) => (
@@ -128,21 +162,23 @@ export function ProductCard({
                 ))}
               </div>
             </section>
+          ) : null}
+
+          {isAvailable ? (
+            <div className="mt-5">
+              <AddToCartButton
+                productId={product.id}
+                variant={primaryCtaVariant}
+                className="w-full"
+              >
+                Agregar al carrito
+              </AddToCartButton>
+            </div>
           ) : (
-            <div className="mt-5 border-t border-white/10 pt-4 text-sm font-semibold text-white/65">
-              Entrega automatica despues de confirmar el pago.
+            <div className="mt-5 rounded-md border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm font-bold text-amber-100">
+              {product.unavailableReason ?? "Producto pendiente de configurar."}
             </div>
           )}
-
-          <div className="mt-5">
-            <AddToCartButton
-              productId={product.id}
-              variant={primaryCtaVariant}
-              className="w-full"
-            >
-              Agregar al carrito
-            </AddToCartButton>
-          </div>
         </div>
       </div>
     </article>

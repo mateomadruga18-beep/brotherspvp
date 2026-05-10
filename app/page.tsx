@@ -1,13 +1,57 @@
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { ProductCard } from "./_components/ProductCard";
 import { StoreNavbar } from "./_components/StoreNavbar";
-import { getProductsByCategory } from "./lib/catalog";
+import { getFeaturedProduct } from "./lib/catalog";
+
+const recentBuyers = [
+  "ZZukit0",
+  "MateoPvP",
+  "KratosPvP",
+  "BrothersMC",
+  "ApexUser",
+  "VortexUY",
+  "NyxPlayer",
+  "ZenithPro",
+  "OblivionX",
+  "Nemesis_7",
+  "EonCraft",
+  "VIPSteve",
+  "MineAlex",
+  "PvPMax",
+  "RankHunter",
+  "LootKing",
+  "CrateFan",
+  "UltraCos",
+  "AzadaPro",
+  "MoneyBoost",
+  "BrotherPlus",
+];
+
+const paymentMethods = [
+  "PayPal",
+  "Mercado Pago",
+  "Tarjetas",
+  "Debito",
+  "Credito",
+  "UYU",
+  "USD",
+  "Checkout seguro",
+];
+
+function PlayerHead({ name }: { name: string }) {
+  return (
+    <img
+      src={`https://mc-heads.net/avatar/${encodeURIComponent(name)}/48`}
+      alt={name}
+      className="size-10 rounded-md border border-white/10 bg-black/40 object-cover"
+      loading="lazy"
+    />
+  );
+}
 
 export default function Home() {
-  const ranks = getProductsByCategory("rank");
-  const featuredRanks = ranks.filter((rank) =>
-    ["rank_vip", "rank_eon", "rank_brothers", "rank_brothers_plus"].includes(rank.id),
-  );
+  const featuredProduct = getFeaturedProduct();
 
   return (
     <div className="relative flex flex-1 flex-col overflow-hidden">
@@ -18,99 +62,166 @@ export default function Home() {
       <StoreNavbar />
 
       <main className="flex-1">
-        <section className="container py-14 sm:py-16">
-          <div className="grid items-center gap-10 lg:grid-cols-12">
-            <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-2 rounded-md border border-emerald-300/20 bg-emerald-300/10 px-4 py-2 text-xs font-bold text-emerald-100">
-                Tienda oficial de rangos BrotherSPvP
-              </div>
-
-              <h1 className="mt-6 max-w-4xl text-4xl font-black leading-tight text-white sm:text-5xl">
-                Rangos, recompensas y beneficios listos para tu cuenta de Minecraft.
-              </h1>
-
-              <p className="mt-5 max-w-2xl text-base leading-7 text-white/72 sm:text-lg">
-                Compra rangos permanentes con entrega automatica despues del pago. Cada rango muestra tag, multiplicador, descuento, Armor Boost, parcelas, recursos y comandos.
-              </p>
-
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <Link className="mc-button w-full sm:w-auto" href="/ranks">
-                  Ver rangos
-                </Link>
-                <Link className="mc-button mc-button-secondary w-full sm:w-auto" href="/store">
-                  Abrir tienda
-                </Link>
-                <Link className="mc-button mc-button-ghost w-full sm:w-auto" href="/cart">
-                  Ver carrito
-                </Link>
-              </div>
-
-              <div className="mt-10 grid gap-3 sm:grid-cols-3">
-                {[
-                  ["10", "rangos permanentes"],
-                  ["UYU/USD", "pagos reales activos"],
-                  ["RCON", "entrega preparada"],
-                ].map(([value, label]) => (
-                  <div key={label} className="rounded-lg border border-white/10 bg-white/[0.055] p-4">
-                    <div className="text-xl font-black text-white">{value}</div>
-                    <div className="mt-1 text-xs font-semibold uppercase text-white/55">{label}</div>
+        <section className="container py-8 sm:py-10">
+          <div className="grid gap-6 lg:grid-cols-[20rem_1fr]">
+            <aside className="space-y-4">
+              <div className="rounded-lg border border-white/10 bg-white/[0.055] p-5">
+                <div className="text-xs font-black uppercase text-white/55">Owner del servidor</div>
+                <div className="mt-4 flex items-center gap-4">
+                  <img
+                    src="https://mc-heads.net/body/ZZukit0/110"
+                    alt="Skin completa de ZZukit0"
+                    className="h-28 w-16 object-contain"
+                  />
+                  <div>
+                    <div className="text-xl font-black text-white">ZZukit0</div>
+                    <div className="mt-1 text-sm font-bold text-amber-200">OWNER</div>
+                    <div className="mt-2 text-xs leading-5 text-white/60">
+                      Responsable de BrotherSPvP y soporte principal de la tienda.
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="lg:col-span-5">
-              <div className="mb-4 flex items-center justify-between gap-4">
-                <div>
-                  <div className="text-xs font-black uppercase text-white/55">Destacado</div>
-                  <div className="mt-1 text-xl font-black text-white">BROTHERS+</div>
                 </div>
-                <Link className="text-sm font-semibold text-white/70 transition hover:text-white" href="/ranks">
-                  Comparar
-                </Link>
               </div>
-              <ProductCard
-                product={ranks.find((rank) => rank.id === "rank_brothers_plus") ?? ranks[0]}
-                primaryCtaVariant="secondary"
-              />
-            </div>
-          </div>
-        </section>
 
-        <section className="container py-12 sm:py-14">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="text-2xl font-black text-white">Rangos principales</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-white/65 sm:text-base">
-                Una vista rapida de la progresion. En la pagina de rangos estan los 10 con todos los detalles.
-              </p>
-            </div>
-            <Link className="mc-button mc-button-ghost h-10 px-4 text-sm" href="/ranks">
-              Ver los 10 rangos
-            </Link>
-          </div>
+              <div className="rounded-lg border border-white/10 bg-white/[0.055] p-5">
+                <div className="text-xs font-black uppercase text-white/55">Top comprador</div>
+                <div className="mt-4 flex items-center gap-4">
+                  <img
+                    src="https://mc-heads.net/body/ZZukit0/120"
+                    alt="Top comprador ZZukit0"
+                    className="h-32 w-20 object-contain"
+                    loading="lazy"
+                  />
+                  <div>
+                    <div className="text-lg font-black text-[var(--foreground)]">ZZukit0</div>
+                    <div className="mt-1 text-sm font-semibold text-white/60">
+                      Quien mas ha gastado este mes.
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-          <div className="mt-6 grid gap-5 xl:grid-cols-2">
-            {featuredRanks.map((product, index) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                primaryCtaVariant={index >= 2 ? "secondary" : "primary"}
-              />
-            ))}
+              <div className="rounded-lg border border-white/10 bg-white/[0.055] p-5">
+                <div className="text-xs font-black uppercase text-white/55">Ultimos compradores</div>
+                <div className="mt-4 grid grid-cols-7 gap-2">
+                  {recentBuyers.map((buyer) => (
+                    <PlayerHead key={buyer} name={buyer} />
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-white/10 bg-white/[0.055] p-5">
+                <div className="text-xs font-black uppercase text-white/55">Contactanos</div>
+                <p className="mt-3 text-sm leading-6 text-white/70">
+                  Soporte, dudas de compra o problemas de entrega.
+                </p>
+                <a
+                  className="mt-3 block break-all text-sm font-black text-amber-200 transition hover:text-amber-100"
+                  href="mailto:mateomadruga18@gmail.com"
+                >
+                  mateomadruga18@gmail.com
+                </a>
+              </div>
+            </aside>
+
+            <div className="min-w-0">
+              <section className="rounded-lg border border-white/10 bg-white/[0.045] p-6 text-center sm:p-8">
+                <img
+                  src="/assets/brotherspvp-logo.png"
+                  alt="BrotherSPvP Network"
+                  className="mx-auto h-auto w-full max-w-md object-contain"
+                />
+                <div className="mx-auto mt-6 max-w-3xl">
+                  <div className="text-xs font-black uppercase text-emerald-200">
+                    Tienda oficial
+                  </div>
+                  <h1 className="mt-3 text-3xl font-black leading-tight text-white sm:text-5xl">
+                    Compra paquetes, rangos y beneficios para BrotherSPvP.
+                  </h1>
+                  <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-white/70 sm:text-base">
+                    Pagos reales activos con PayPal y Mercado Pago. Las compras aprobadas se entregan al usuario de Minecraft indicado en checkout.
+                  </p>
+                </div>
+
+                <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+                  <Link className="mc-button w-full sm:w-auto" href="/exclusivos">
+                    Ver exclusivos
+                  </Link>
+                  <Link className="mc-button mc-button-secondary w-full sm:w-auto" href="/ranks">
+                    Ver rangos
+                  </Link>
+                  <Link className="mc-button mc-button-ghost w-full sm:w-auto" href="/crates">
+                    Ver llaves
+                  </Link>
+                </div>
+              </section>
+
+              <section className="mt-6">
+                <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <h2 className="text-2xl font-black text-white">Paquete destacado</h2>
+                    <p className="mt-1 text-sm leading-6 text-white/65">
+                      Producto recomendado para progresar rapido dentro del servidor.
+                    </p>
+                  </div>
+                  <Link className="text-sm font-semibold text-white/70 transition hover:text-white" href="/exclusivos">
+                    Ver todos los exclusivos
+                  </Link>
+                </div>
+                <ProductCard product={featuredProduct} primaryCtaVariant="secondary" />
+              </section>
+
+              <section className="mt-6 grid gap-4 xl:grid-cols-2">
+                <div className="rounded-lg border border-white/10 bg-white/[0.055] p-5">
+                  <div className="text-xs font-black uppercase text-white/55">
+                    Metodos de pago disponibles
+                  </div>
+                  <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                    {paymentMethods.map((method) => (
+                      <div
+                        key={method}
+                        className="rounded-md border border-white/10 bg-black/25 px-3 py-3 text-center text-xs font-black text-white/80"
+                      >
+                        {method}
+                      </div>
+                    ))}
+                  </div>
+                  <p className="mt-4 text-sm leading-6 text-white/65">
+                    PayPal cobra en USD. Mercado Pago usa checkout real para Uruguay y convierte la compra a UYU.
+                  </p>
+                </div>
+
+                <div className="rounded-lg border border-white/10 bg-white/[0.055] p-5">
+                  <div className="text-xs font-black uppercase text-red-200">
+                    Politica de reembolsos
+                  </div>
+                  <p className="mt-4 text-sm leading-6 text-white/70">
+                    Todos los pagos son finales y no reembolsables. Al comprar aceptas que los beneficios digitales se entregan dentro del servidor. Los intentos de reembolso o contracargo pueden derivar en bloqueo permanente del servidor y de la tienda.
+                  </p>
+                  <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                    <Link className="mc-button mc-button-ghost h-10 px-4 text-sm" href="/store">
+                      Terminos de compra
+                    </Link>
+                    <a className="mc-button h-10 px-4 text-sm" href="mailto:mateomadruga18@gmail.com">
+                      Soporte
+                    </a>
+                  </div>
+                </div>
+              </section>
+            </div>
           </div>
         </section>
       </main>
 
       <footer className="border-t border-white/10 bg-black/25">
         <div className="container flex flex-col gap-3 py-9 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between">
-          <div>BrotherSPvP. Tienda no afiliada con Mojang ni Microsoft.</div>
+          <div>BrotherSPvP Network. Tienda no afiliada con Mojang ni Microsoft.</div>
           <div className="flex items-center gap-5">
             <Link className="transition hover:text-white" href="/store">
               Tienda
             </Link>
-            <Link className="transition hover:text-white" href="/ranks">
-              Rangos
+            <Link className="transition hover:text-white" href="/exclusivos">
+              Exclusivos
             </Link>
             <Link className="transition hover:text-white" href="/cart">
               Carrito

@@ -179,7 +179,7 @@ body {
 
 .rank-art {
   position: relative;
-  min-height: 9.75rem;
+  min-height: 12.25rem;
   overflow: hidden;
   border-radius: 0.5rem;
   border: 1px solid color-mix(in srgb, var(--rank-accent) 42%, rgba(255, 255, 255, 0.1));
@@ -204,47 +204,158 @@ body {
   mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.85), transparent 82%);
 }
 
-.rank-crest {
+.rank-banner {
   position: absolute;
-  right: 1rem;
-  top: 1rem;
-  display: grid;
-  height: 5.4rem;
-  width: 5.4rem;
-  place-items: center;
-  transform: rotate(45deg);
-  border: 1px solid color-mix(in srgb, var(--rank-accent) 60%, white 8%);
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--rank-accent) 32%, #05070c), #05070c 62%),
-    #05070c;
-  box-shadow:
-    0 0 0 0.45rem rgba(0, 0, 0, 0.2),
-    0 18px 45px var(--rank-glow);
+  left: 50%;
+  top: 0.9rem;
+  z-index: 3;
+  min-width: 7rem;
+  transform: translateX(-50%);
+  border: 1px solid color-mix(in srgb, var(--rank-accent) 58%, white 8%);
+  border-radius: 0.35rem;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--rank-accent) 24%, #10131b), #05070c);
+  padding: 0.45rem 0.7rem;
+  text-align: center;
+  box-shadow: 0 12px 34px var(--rank-glow);
 }
 
-.rank-crest-inner {
-  transform: rotate(-45deg);
+.rank-banner span {
   color: var(--rank-text);
-  font-size: 1.05rem;
+  font-size: 0.9rem;
   font-weight: 950;
   text-shadow: 0 0 18px var(--rank-glow);
+}
+
+.rank-banner::before,
+.rank-banner::after {
+  content: "";
+  position: absolute;
+  top: -1rem;
+  width: 1px;
+  height: 1rem;
+  background: color-mix(in srgb, var(--rank-accent) 68%, white 10%);
+}
+
+.rank-banner::before {
+  left: 1rem;
+}
+
+.rank-banner::after {
+  right: 1rem;
+}
+
+.rank-character {
+  position: absolute;
+  left: 50%;
+  bottom: 1.35rem;
+  z-index: 2;
+  width: 5.8rem;
+  height: 7.6rem;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.5));
+}
+
+.rank-character-head,
+.rank-character-body,
+.rank-character-arm,
+.rank-character-leg {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--rank-accent) 58%, #ffffff 8%), color-mix(in srgb, var(--rank-accent) 24%, #0b0f18 70%));
+  box-shadow: 0 0 22px var(--rank-glow);
+}
+
+.rank-character-head {
+  left: 1.85rem;
+  top: 0.55rem;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 0.2rem;
+}
+
+.rank-character-head::before,
+.rank-character-head::after {
+  content: "";
+  position: absolute;
+  top: 0.85rem;
+  width: 0.3rem;
+  height: 0.22rem;
+  background: #05070c;
+}
+
+.rank-character-head::before {
+  left: 0.48rem;
+}
+
+.rank-character-head::after {
+  right: 0.48rem;
+}
+
+.rank-character-body {
+  left: 1.55rem;
+  top: 2.75rem;
+  width: 2.7rem;
+  height: 2.9rem;
+  border-radius: 0.18rem;
+}
+
+.rank-character-arm {
+  top: 2.95rem;
+  width: 0.85rem;
+  height: 2.8rem;
+  border-radius: 0.16rem;
+}
+
+.rank-character-arm-left {
+  left: 0.55rem;
+  transform: rotate(10deg);
+}
+
+.rank-character-arm-right {
+  right: 0.55rem;
+  transform: rotate(-10deg);
+}
+
+.rank-character-leg {
+  top: 5.75rem;
+  width: 1.05rem;
+  height: 1.6rem;
+  border-radius: 0.14rem;
+}
+
+.rank-character-leg-left {
+  left: 1.65rem;
+}
+
+.rank-character-leg-right {
+  right: 1.65rem;
 }
 
 .rank-art-copy {
   position: absolute;
   left: 1rem;
-  right: 7.2rem;
-  bottom: 1rem;
+  right: 1rem;
+  bottom: 0.95rem;
+  z-index: 4;
+  text-align: center;
 }
 
 .rank-art-title {
   margin-top: 0.2rem;
   color: var(--rank-text);
-  font-size: 1.75rem;
+  font-size: 1.35rem;
   font-weight: 950;
   line-height: 1;
   text-shadow: 0 0 18px var(--rank-glow);
   word-break: break-word;
+}
+
+.rank-art-subtitle {
+  margin-top: 0.35rem;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.67rem;
+  font-weight: 950;
 }
 
 .rank-art-band {
@@ -254,4 +365,108 @@ body {
   bottom: 0;
   height: 0.35rem;
   background: linear-gradient(90deg, transparent, var(--rank-accent), var(--rank-accent-2), transparent);
+}
+
+.package-art {
+  position: relative;
+  min-height: 12.25rem;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--rank-accent) 42%, rgba(255, 255, 255, 0.1));
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--rank-accent) 26%, transparent), transparent 44%),
+    radial-gradient(circle at 70% 20%, color-mix(in srgb, var(--rank-accent-2) 28%, transparent), transparent 38%),
+    #090d16;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.5) inset,
+    0 24px 70px var(--rank-glow);
+}
+
+.package-art-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.22;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.package-shine {
+  position: absolute;
+  inset: 1rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--rank-accent) 30%, transparent), transparent 62%);
+  filter: blur(16px);
+}
+
+.package-icon {
+  position: absolute;
+  left: 50%;
+  top: 1.3rem;
+  z-index: 2;
+  display: grid;
+  width: 6.8rem;
+  height: 6.8rem;
+  place-items: center;
+  transform: translateX(-50%) rotate(-7deg);
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, var(--rank-accent) 55%, white 8%);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--rank-accent) 36%, #05070c), #05070c 64%),
+    #05070c;
+  box-shadow: 0 18px 44px var(--rank-glow);
+}
+
+.package-art-crate .package-icon {
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.package-art-booster .package-icon {
+  border-radius: 50%;
+}
+
+.package-icon-core {
+  display: grid;
+  width: 4.4rem;
+  height: 4.4rem;
+  place-items: center;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--rank-accent-2) 26%, transparent), rgba(255, 255, 255, 0.05));
+}
+
+.package-art-crate .package-icon-core {
+  transform: rotate(-45deg);
+}
+
+.package-icon-core span {
+  color: var(--rank-text);
+  font-size: 1.25rem;
+  font-weight: 950;
+  text-shadow: 0 0 18px var(--rank-glow);
+}
+
+.package-art-copy {
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 3;
+  text-align: center;
+}
+
+.package-art-title {
+  color: var(--rank-text);
+  font-size: 1.3rem;
+  font-weight: 950;
+  text-shadow: 0 0 18px var(--rank-glow);
+}
+
+.package-art-detail {
+  margin-top: 0.35rem;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
 }

@@ -33,7 +33,13 @@ export default function CheckoutPage() {
   const { push } = useToast();
 
   const cartLines = useMemo(
-    () => lines.map((line) => ({ productId: line.productId, quantity: line.quantity })),
+    () =>
+      lines
+        .filter((line) => {
+          const product = getProductById(line.productId);
+          return Boolean(product && product.available !== false);
+        })
+        .map((line) => ({ productId: line.productId, quantity: line.quantity })),
     [lines],
   );
 

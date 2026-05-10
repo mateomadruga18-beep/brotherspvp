@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useCart } from "./cart";
 
 const links = [
   { href: "/store", label: "Tienda" },
   { href: "/ranks", label: "Rangos" },
-  { href: "/crates", label: "Cajas" },
-  { href: "/coins", label: "Monedas" },
+  { href: "/crates", label: "Llaves" },
+  { href: "/exclusivos", label: "Exclusivos" },
 ];
 
 export function StoreNavbar() {
@@ -19,9 +20,13 @@ export function StoreNavbar() {
     <header className="sticky top-0 z-20 border-b border-white/10 bg-[#07080b]/88 backdrop-blur-xl">
       <div className="container flex h-16 items-center justify-between gap-4">
         <Link href="/" className="flex min-w-0 items-center gap-3">
-          <div className="grid size-9 shrink-0 place-items-center rounded-md border border-emerald-300/25 bg-emerald-300/10 text-sm font-black text-emerald-100">
-            BP
-          </div>
+          <Image
+            src="/assets/brotherspvp-logo.png"
+            alt="BrotherSPvP Network"
+            width={40}
+            height={40}
+            className="h-10 w-10 shrink-0 object-contain"
+          />
           <div className="min-w-0 leading-tight">
             <div className="truncate text-sm font-extrabold text-white">BrotherSPvP</div>
             <div className="truncate text-xs text-white/60">play.brotherspvp.net</div>

@@ -2,6 +2,23 @@ import type { Product, ProductCategory } from "./storeTypes";
 
 export type { Product, ProductCategory } from "./storeTypes";
 
+const rankGroups = {
+  VIP: "vip",
+  NEMESIS: "nemesis",
+  APEX: "apex",
+  VORTEX: "vortex",
+  EON: "eon",
+  OBLIVION: "oblivion",
+  ZENITH: "zenith",
+  NYX: "nyx",
+  BROTHERS: "brothers",
+  "BROTHERS+": "brothersplus",
+} as const;
+
+function rankDelivery(name: keyof typeof rankGroups) {
+  return [`lp user %player% group add ${rankGroups[name]}`];
+}
+
 const rankProducts: Product[] = [
   {
     id: "rank_vip",
@@ -18,6 +35,7 @@ const rankProducts: Product[] = [
       glow: "rgba(34, 197, 94, 0.36)",
       mark: "VIP",
     },
+    visual: { kind: "rank", label: "VIP", detail: "Permanente" },
     stats: [
       { label: "Tag", value: "VIP" },
       { label: "Multiplicador", value: "x2.0" },
@@ -33,7 +51,8 @@ const rankProducts: Product[] = [
       "Lootboxes: x1 Basic",
     ],
     commands: ["/feed", "/fly", "/ec", "/invsee", "/nick"],
-    perks: ["Tag VIP", "Multiplicador x2.0", "5 recursos al comprar"],
+    deliveryCommands: rankDelivery("VIP"),
+    perks: ["Tag VIP", "Multiplicador x2.0", "Rango permanente"],
   },
   {
     id: "rank_nemesis",
@@ -50,6 +69,7 @@ const rankProducts: Product[] = [
       glow: "rgba(25, 230, 230, 0.34)",
       mark: "NE",
     },
+    visual: { kind: "rank", label: "NEMESIS", detail: "Permanente" },
     stats: [
       { label: "Tag", value: "NEMESIS" },
       { label: "Multiplicador", value: "x3.0" },
@@ -65,6 +85,7 @@ const rankProducts: Product[] = [
       "Lootboxes: x2 Premium",
     ],
     commands: ["/feed", "/fly", "/ec", "/invsee", "/nick", "/workbench"],
+    deliveryCommands: rankDelivery("NEMESIS"),
     perks: ["Tag NEMESIS", "Multiplicador x3.0", "Incluye /workbench"],
   },
   {
@@ -82,6 +103,7 @@ const rankProducts: Product[] = [
       glow: "rgba(37, 137, 255, 0.36)",
       mark: "AX",
     },
+    visual: { kind: "rank", label: "APEX", detail: "Permanente" },
     stats: [
       { label: "Tag", value: "APEX" },
       { label: "Multiplicador", value: "x4.0" },
@@ -97,6 +119,7 @@ const rankProducts: Product[] = [
       "Lootboxes: x3 Premium",
     ],
     commands: ["/feed", "/fly", "/ec", "/invsee", "/nick", "/repair"],
+    deliveryCommands: rankDelivery("APEX"),
     perks: ["Tag APEX", "Multiplicador x4.0", "Incluye /repair"],
   },
   {
@@ -114,6 +137,7 @@ const rankProducts: Product[] = [
       glow: "rgba(255, 49, 208, 0.34)",
       mark: "VX",
     },
+    visual: { kind: "rank", label: "VORTEX", detail: "Permanente" },
     stats: [
       { label: "Tag", value: "VORTEX" },
       { label: "Multiplicador", value: "x5.0" },
@@ -129,6 +153,7 @@ const rankProducts: Product[] = [
       "Lootboxes: x4 Premium",
     ],
     commands: ["/feed", "/fly", "/ec", "/invsee", "/nick", "/repair all"],
+    deliveryCommands: rankDelivery("VORTEX"),
     perks: ["Tag VORTEX", "Multiplicador x5.0", "Incluye /repair all"],
   },
   {
@@ -146,6 +171,7 @@ const rankProducts: Product[] = [
       glow: "rgba(138, 255, 0, 0.3)",
       mark: "EO",
     },
+    visual: { kind: "rank", label: "EON", detail: "Permanente" },
     stats: [
       { label: "Tag", value: "EON" },
       { label: "Multiplicador", value: "x6.0" },
@@ -161,6 +187,7 @@ const rankProducts: Product[] = [
       "Lootboxes: x5 Premium",
     ],
     commands: ["/feed", "/fly", "/ec", "/invsee", "/nick", "/condense"],
+    deliveryCommands: rankDelivery("EON"),
     perks: ["Tag EON", "Multiplicador x6.0", "Incluye /condense"],
   },
   {
@@ -178,6 +205,7 @@ const rankProducts: Product[] = [
       glow: "rgba(255, 176, 32, 0.34)",
       mark: "OB",
     },
+    visual: { kind: "rank", label: "OBLIVION", detail: "Permanente" },
     stats: [
       { label: "Tag", value: "OBLIVION" },
       { label: "Multiplicador", value: "x7.0" },
@@ -193,6 +221,7 @@ const rankProducts: Product[] = [
       "Lootboxes: x6 Premium",
     ],
     commands: ["/feed", "/fly", "/ec", "/invsee", "/nick", "/near"],
+    deliveryCommands: rankDelivery("OBLIVION"),
     perks: ["Tag OBLIVION", "Multiplicador x7.0", "Incluye /near"],
   },
   {
@@ -210,6 +239,7 @@ const rankProducts: Product[] = [
       glow: "rgba(39, 216, 255, 0.34)",
       mark: "ZN",
     },
+    visual: { kind: "rank", label: "ZENITH", detail: "Permanente" },
     stats: [
       { label: "Tag", value: "ZENITH" },
       { label: "Multiplicador", value: "x8.0" },
@@ -225,6 +255,7 @@ const rankProducts: Product[] = [
       "Lootboxes: x7 Premium",
     ],
     commands: ["/feed", "/fly", "/ec", "/invsee", "/nick", "/stack"],
+    deliveryCommands: rankDelivery("ZENITH"),
     perks: ["Tag ZENITH", "Multiplicador x8.0", "Incluye /stack"],
   },
   {
@@ -242,6 +273,7 @@ const rankProducts: Product[] = [
       glow: "rgba(239, 43, 43, 0.34)",
       mark: "NX",
     },
+    visual: { kind: "rank", label: "NYX", detail: "Permanente" },
     stats: [
       { label: "Tag", value: "NYX" },
       { label: "Multiplicador", value: "x9.0" },
@@ -257,6 +289,7 @@ const rankProducts: Product[] = [
       "Lootboxes: x8 Premium",
     ],
     commands: ["/feed", "/fly", "/ec", "/invsee", "/nick", "/chatcolor"],
+    deliveryCommands: rankDelivery("NYX"),
     perks: ["Tag NYX", "Multiplicador x9.0", "Incluye /chatcolor"],
   },
   {
@@ -274,6 +307,7 @@ const rankProducts: Product[] = [
       glow: "rgba(255, 216, 77, 0.34)",
       mark: "BR",
     },
+    visual: { kind: "rank", label: "BROTHERS", detail: "Permanente" },
     stats: [
       { label: "Tag", value: "BROTHERS" },
       { label: "Multiplicador", value: "x10.0" },
@@ -289,6 +323,7 @@ const rankProducts: Product[] = [
       "Lootboxes: x9 Premium",
     ],
     commands: ["/feed", "/fly", "/ec", "/invsee", "/nick", "/chatcolor"],
+    deliveryCommands: rankDelivery("BROTHERS"),
     perks: ["Tag BROTHERS", "Multiplicador x10.0", "Bombas Mythic"],
   },
   {
@@ -306,6 +341,7 @@ const rankProducts: Product[] = [
       glow: "rgba(255, 74, 53, 0.36)",
       mark: "B+",
     },
+    visual: { kind: "rank", label: "BROTHERS+", detail: "Permanente" },
     stats: [
       { label: "Tag", value: "BROTHERS+" },
       { label: "Multiplicador", value: "x11.0" },
@@ -326,75 +362,202 @@ const rankProducts: Product[] = [
       "Color de chat /chatcolor",
       "Prioridad para entrar con servidor lleno",
     ],
+    deliveryCommands: rankDelivery("BROTHERS+"),
     perks: ["Tag BROTHERS+", "Multiplicador x11.0", "Todo desbloqueado"],
+  },
+];
+
+const crateProducts: Product[] = [
+  {
+    id: "crate_brothers_x7",
+    category: "crate",
+    name: "Llave BROTHERS x7",
+    description: "Pack de 7 llaves BROTHERS para reclamar la crate dentro del servidor.",
+    priceUsd: 14.99,
+    badge: "Llave premium",
+    gradientClass: "from-orange-400/28 via-yellow-300/18 to-transparent",
+    theme: {
+      accent: "#ff9f1c",
+      accent2: "#ffe066",
+      text: "#fff1b8",
+      glow: "rgba(255, 159, 28, 0.36)",
+      mark: "K7",
+    },
+    visual: { kind: "crate", label: "BROTHERS", detail: "x7 llaves" },
+    rewards: ["7 llaves BROTHERS", "Crate premium del servidor", "Entrega automatica al usuario"],
+    commands: ["/crate give p Brothers 7 %player%"],
+    deliveryCommands: ["crate give p Brothers 7 %player%"],
+    perks: ["x7 llaves", "Colores naranja y dorado", "Entrega por comando"],
+  },
+];
+
+const exclusiveProducts: Product[] = [
+  {
+    id: "exclusive_bundle_super_x10",
+    category: "exclusive",
+    name: "Bundle SUPER x10",
+    description: "Diez bundles SUPER con recursos fuertes y multiplicador temporal.",
+    priceUsd: 25,
+    badge: "Bundle",
+    featured: true,
+    gradientClass: "from-yellow-300/24 via-orange-400/18 to-transparent",
+    theme: {
+      accent: "#ffcc33",
+      accent2: "#ff8a00",
+      text: "#fff1b8",
+      glow: "rgba(255, 204, 51, 0.34)",
+      mark: "S",
+    },
+    visual: { kind: "bundle", label: "SUPER", detail: "x10 bundles" },
+    rewards: [
+      "Multiplicador +10.0 por 15 min",
+      "Dinero: $1B",
+      "Tokens: 5B",
+      "Gemas: 5M",
+      "Esencias: 5M",
+      "Puntos gang: +5 por jugador",
+    ],
+    commands: ["/kit give bundle5 %player%"],
+    deliveryCommands: ["kit give bundle5 %player%"],
+    perks: ["x10 Bundle Item Super", "Recursos masivos", "Boost temporal"],
+  },
+  {
+    id: "exclusive_premium_lootbox_x24",
+    category: "exclusive",
+    name: "Premium Lootbox x24",
+    description: "Pack de 24 lootboxes premium con premios reales y cooldown rapido.",
+    priceUsd: 13.99,
+    badge: "Lootbox",
+    gradientClass: "from-purple-500/24 via-cyan-400/14 to-transparent",
+    theme: {
+      accent: "#8b5cf6",
+      accent2: "#22d3ee",
+      text: "#e9d5ff",
+      glow: "rgba(139, 92, 246, 0.34)",
+      mark: "LB",
+    },
+    visual: { kind: "lootbox", label: "PREMIUM", detail: "x24 lootboxes" },
+    rewards: [
+      "Incluye gemas, tokens, esencias y dinero",
+      "Entrega entre 4 y 10 premios reales",
+      "Cooldown de apertura: 1 segundo",
+      "Pack total: x24 Premium Lootbox",
+    ],
+    commands: ["/lootbox give %player% Premium 24"],
+    deliveryCommands: ["lootbox give %player% Premium 24"],
+    perks: ["x24 Premium Lootbox", "4 a 10 premios", "Cooldown rapido"],
+  },
+  {
+    id: "exclusive_boosteritem_x1",
+    category: "exclusive",
+    name: "BoosterItem x1",
+    description: "Mejora permanente para armadura y economias del servidor.",
+    priceUsd: 3.99,
+    badge: "Booster",
+    gradientClass: "from-orange-500/24 via-red-400/14 to-transparent",
+    theme: {
+      accent: "#ff6b35",
+      accent2: "#ffd166",
+      text: "#ffe4c7",
+      glow: "rgba(255, 107, 53, 0.34)",
+      mark: "1%",
+    },
+    visual: { kind: "booster", label: "BOOSTER", detail: "+1%" },
+    rewards: [
+      "+1% de mejora para tu armadura",
+      "+1% de ganancias en todas las economias disponibles",
+      "Se aplica desde el item dentro del servidor",
+    ],
+    commands: ["/armadura give %player% boosteritem 1"],
+    deliveryCommands: ["armadura give %player% boosteritem 1"],
+    perks: ["Mejora de armadura", "Ganancias aumentadas", "x1 BoosterItem"],
+  },
+  {
+    id: "exclusive_azada_xp_500k",
+    category: "exclusive",
+    name: "XP Azada 500K",
+    description: "Aumenta la experiencia de tu azada para subir niveles mucho mas rapido.",
+    priceUsd: 9.99,
+    badge: "Progreso",
+    gradientClass: "from-lime-400/24 via-emerald-400/14 to-transparent",
+    theme: {
+      accent: "#a3e635",
+      accent2: "#34d399",
+      text: "#ecfccb",
+      glow: "rgba(163, 230, 53, 0.34)",
+      mark: "XP",
+    },
+    visual: { kind: "xp", label: "AZADA", detail: "500K XP" },
+    rewards: [
+      "500.000 XP para tu azada",
+      "Sube niveles mas rapido",
+      "Ideal para progresar en farmeo",
+    ],
+    commands: ["/azada add %player% 500000"],
+    deliveryCommands: ["azada add %player% 500000"],
+    perks: ["500K XP", "Progreso rapido", "Entrega directa"],
+  },
+  {
+    id: "exclusive_money_multiplier_20x",
+    category: "exclusive",
+    name: "Multiplicador de Dinero 20x",
+    description: "Multiplicador permanente de dinero para mejorar tus ganancias del servidor.",
+    priceUsd: 13.99,
+    available: false,
+    unavailableReason: "Falta configurar el comando exacto de entrega.",
+    badge: "Pendiente",
+    gradientClass: "from-emerald-400/24 via-yellow-300/14 to-transparent",
+    theme: {
+      accent: "#22c55e",
+      accent2: "#facc15",
+      text: "#dcfce7",
+      glow: "rgba(34, 197, 94, 0.32)",
+      mark: "20x",
+    },
+    visual: { kind: "money", label: "DINERO", detail: "20x permanente" },
+    rewards: [
+      "20x multiplicador de dinero permanente",
+      "Mejora las ganancias economicas",
+      "Pendiente de comando para activar compra automatica",
+    ],
+    commands: ["Comando pendiente"],
+    perks: ["20x dinero", "Permanente", "Pendiente de comando"],
+  },
+  {
+    id: "exclusive_ultracosmetics_access",
+    category: "exclusive",
+    name: "Acceso UltraCosmetics",
+    description: "Acceso total a /uc y /ultracosmetics con todos los cosmeticos desbloqueados.",
+    priceUsd: 0,
+    priceLabel: "Precio a confirmar",
+    available: false,
+    unavailableReason: "Falta definir el precio de venta.",
+    badge: "Pendiente",
+    gradientClass: "from-pink-500/24 via-violet-500/14 to-transparent",
+    theme: {
+      accent: "#ec4899",
+      accent2: "#a855f7",
+      text: "#fce7f3",
+      glow: "rgba(236, 72, 153, 0.34)",
+      mark: "UC",
+    },
+    visual: { kind: "cosmetics", label: "COSMETICS", detail: "all access" },
+    rewards: [
+      "Acceso al comando /uc",
+      "Cosmeticos, mascotas y gadgets",
+      "Emotes, sombreros, efectos y particulas",
+      "Efectos de proyectiles y efectos al morir",
+    ],
+    commands: ["/lp user %player% permission set ultracosmetics.allcosmetics"],
+    deliveryCommands: ["lp user %player% permission set ultracosmetics.allcosmetics"],
+    perks: ["Todos los cosmeticos", "/uc desbloqueado", "Pendiente de precio"],
   },
 ];
 
 export const catalog: Product[] = [
   ...rankProducts,
-  {
-    id: "crate_mythic",
-    category: "crate",
-    name: "Llave Mythic",
-    description: "Recompensas raras, cosmeticos y premios de alto valor.",
-    priceUsd: 3.49,
-    badge: "Mejor loot",
-    gradientClass: "from-fuchsia-400/25 via-sky-400/15 to-transparent",
-  },
-  {
-    id: "crate_season",
-    category: "crate",
-    name: "Llave de Temporada",
-    description: "Drops limitados y premios rotativos del servidor.",
-    priceUsd: 2.49,
-    badge: "Limitada",
-    gradientClass: "from-emerald-400/22 via-cyan-400/12 to-transparent",
-  },
-  {
-    id: "crate_classic",
-    category: "crate",
-    name: "Llave Clasica",
-    description: "Una mezcla confiable de cosmeticos y premios utiles.",
-    priceUsd: 1.99,
-    badge: "Popular",
-    gradientClass: "from-amber-400/20 via-orange-400/12 to-transparent",
-  },
-  {
-    id: "crate_builder",
-    category: "crate",
-    name: "Llave Builder",
-    description: "Particulas, trails y recompensas para constructores.",
-    priceUsd: 2.99,
-    badge: "Estilo",
-    gradientClass: "from-indigo-400/22 via-violet-400/12 to-transparent",
-  },
-  {
-    id: "coins_10k",
-    category: "coin",
-    name: "10.000 Coins",
-    description: "Recarga rapida para subastas, compras y cosmeticos.",
-    priceUsd: 3.99,
-    badge: "Recarga",
-    gradientClass: "from-sky-400/22 via-indigo-400/12 to-transparent",
-  },
-  {
-    id: "coins_50k",
-    category: "coin",
-    name: "50.000 Coins",
-    description: "El punto ideal para bundles y compras frecuentes.",
-    priceUsd: 14.99,
-    badge: "+10% bonus",
-    gradientClass: "from-violet-400/22 via-fuchsia-400/12 to-transparent",
-  },
-  {
-    id: "coins_150k",
-    category: "coin",
-    name: "150.000 Coins",
-    description: "Mejor valor para compras grandes dentro del servidor.",
-    priceUsd: 39.99,
-    badge: "+25% bonus",
-    gradientClass: "from-emerald-400/20 via-cyan-400/12 to-transparent",
-  },
+  ...crateProducts,
+  ...exclusiveProducts,
 ];
 
 export function formatUsd(amount: number) {
@@ -407,10 +570,18 @@ export function formatUsd(amount: number) {
   return `${formatted} USD`;
 }
 
+export function getProductPriceLabel(product: Product) {
+  return product.priceLabel ?? formatUsd(product.priceUsd);
+}
+
 export function getProductById(id: string) {
-  return catalog.find((p) => p.id === id) ?? null;
+  return catalog.find((product) => product.id === id) ?? null;
 }
 
 export function getProductsByCategory(category: ProductCategory) {
-  return catalog.filter((p) => p.category === category);
+  return catalog.filter((product) => product.category === category);
+}
+
+export function getFeaturedProduct() {
+  return catalog.find((product) => product.featured) ?? exclusiveProducts[0];
 }

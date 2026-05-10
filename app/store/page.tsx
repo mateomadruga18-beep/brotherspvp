@@ -6,19 +6,19 @@ import { getProductsByCategory } from "../lib/catalog";
 export default function StorePage() {
   const ranks = getProductsByCategory("rank");
   const crates = getProductsByCategory("crate");
-  const coins = getProductsByCategory("coin");
+  const exclusives = getProductsByCategory("exclusive");
 
   return (
     <StoreShell
       title="Tienda BrotherSPvP"
-      subtitle="Compra rangos, llaves y monedas con entrega automatica despues de confirmar el pago. Los rangos ya incluyen todos sus beneficios y recompensas."
+      subtitle="Compra rangos, llaves y exclusivos con entrega automatica despues de confirmar el pago."
       right={
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:justify-end">
           <Link className="mc-button mc-button-ghost h-10 px-4 text-sm" href="/cart">
             Ver carrito
           </Link>
-          <Link className="mc-button h-10 px-4 text-sm" href="/ranks">
-            Ver rangos
+          <Link className="mc-button h-10 px-4 text-sm" href="/exclusivos">
+            Exclusivos
           </Link>
         </div>
       }
@@ -30,11 +30,11 @@ export default function StorePage() {
               <div>
                 <h2 className="text-2xl font-black text-white">Rangos permanentes</h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-white/65 sm:text-base">
-                  Diez rangos con identidad propia, colores del servidor y beneficios ordenados para comparar rapido.
+                  Diez rangos con imagen personalizada, muneco por color y beneficios completos.
                 </p>
               </div>
               <Link className="text-sm font-semibold text-white/70 transition hover:text-white" href="/ranks">
-                Comparar todos
+                Comparar rangos
               </Link>
             </div>
             <div className="mt-6 grid gap-5 xl:grid-cols-2">
@@ -51,16 +51,16 @@ export default function StorePage() {
           <div>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <h2 className="text-2xl font-black text-white">Llaves de cajas</h2>
+                <h2 className="text-2xl font-black text-white">Llaves</h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-white/65 sm:text-base">
-                  Drops limitados, cosmeticos y premios para progresar dentro del servidor.
+                  La llave BROTHERS se entrega con x7 llaves para abrir crate dentro del servidor.
                 </p>
               </div>
               <Link className="text-sm font-semibold text-white/70 transition hover:text-white" href="/crates">
-                Ver cajas
+                Ver llaves
               </Link>
             </div>
-            <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <div className="mt-6 grid gap-5 xl:grid-cols-2">
               {crates.map((product) => (
                 <ProductCard key={product.id} product={product} primaryCtaVariant="primary" />
               ))}
@@ -70,18 +70,22 @@ export default function StorePage() {
           <div>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <h2 className="text-2xl font-black text-white">Monedas</h2>
+                <h2 className="text-2xl font-black text-white">Exclusivos</h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-white/65 sm:text-base">
-                  Packs de coins para subastas, economia y compras frecuentes.
+                  Bundles, lootboxes, booster de armadura, XP de azada y accesos especiales.
                 </p>
               </div>
-              <Link className="text-sm font-semibold text-white/70 transition hover:text-white" href="/coins">
-                Ver monedas
+              <Link className="text-sm font-semibold text-white/70 transition hover:text-white" href="/exclusivos">
+                Ver exclusivos
               </Link>
             </div>
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
-              {coins.map((product) => (
-                <ProductCard key={product.id} product={product} primaryCtaVariant="primary" />
+            <div className="mt-6 grid gap-5 xl:grid-cols-2">
+              {exclusives.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  primaryCtaVariant={product.featured ? "secondary" : "primary"}
+                />
               ))}
             </div>
           </div>

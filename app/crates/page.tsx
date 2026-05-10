@@ -7,11 +7,11 @@ export default function CratesPage() {
 
   return (
     <StoreShell
-      title="Llaves de cajas"
-      subtitle="Compra llaves para abrir cajas con drops limitados, cosmeticos y recompensas especiales."
+      title="Llaves"
+      subtitle="Compra la llave BROTHERS y recibe x7 llaves dentro del servidor con entrega automatica."
     >
       <section className="container pb-14 sm:pb-16">
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-5 xl:grid-cols-2">
           {crates.map((product) => (
             <ProductCard key={product.id} product={product} primaryCtaVariant="primary" />
           ))}

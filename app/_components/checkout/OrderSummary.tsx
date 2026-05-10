@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatUsd, getProductById } from "../../lib/catalog";
+import { formatUsd, getProductById, getProductPriceLabel } from "../../lib/catalog";
 
 export type SummaryLine = { productId: string; quantity: number };
 
@@ -47,7 +47,9 @@ export function OrderSummary({
                   </div>
                 </div>
                 <div className="text-sm font-black text-white">
-                  {formatUsd(product.priceUsd * line.quantity)}
+                  {line.quantity === 1
+                    ? getProductPriceLabel(product)
+                    : formatUsd(product.priceUsd * line.quantity)}
                 </div>
               </div>
             );
