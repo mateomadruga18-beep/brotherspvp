@@ -27,6 +27,8 @@ export type ProductVisual = {
   kind: ProductVisualKind;
   label: string;
   detail?: string;
+  imageSrc?: string;
+  imageAlt?: string;
 };
 
 export type Product = {

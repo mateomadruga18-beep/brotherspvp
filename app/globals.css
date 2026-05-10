@@ -174,7 +174,145 @@ body {
 }
 
 .product-card {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.035)),
+    rgba(7, 10, 16, 0.82);
   backdrop-filter: blur(14px);
+}
+
+.product-art {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  max-width: 9.5rem;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--rank-accent) 48%, rgba(255, 255, 255, 0.12));
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--rank-accent) 20%, transparent), transparent 46%),
+    linear-gradient(225deg, color-mix(in srgb, var(--rank-accent-2) 18%, transparent), transparent 42%),
+    #070a12;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.55) inset,
+    0 18px 44px color-mix(in srgb, var(--rank-glow) 64%, transparent);
+}
+
+.product-art-glow {
+  position: absolute;
+  inset: -22%;
+  z-index: 1;
+  background:
+    radial-gradient(circle at 50% 20%, color-mix(in srgb, var(--rank-accent-2) 34%, transparent), transparent 34%),
+    radial-gradient(circle at 18% 72%, color-mix(in srgb, var(--rank-accent) 24%, transparent), transparent 36%);
+  opacity: 0.74;
+}
+
+.product-art-image {
+  z-index: 2;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.02);
+  transition: transform 420ms ease, filter 420ms ease;
+}
+
+.product-card:hover .product-art-image {
+  transform: scale(1.08);
+  filter: saturate(1.08) contrast(1.04);
+}
+
+.product-art-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.02), transparent 42%, rgba(0, 0, 0, 0.84)),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.2), transparent 38%, rgba(0, 0, 0, 0.24));
+}
+
+.product-art-copy {
+  position: absolute;
+  left: 0.55rem;
+  right: 0.55rem;
+  bottom: 0.55rem;
+  z-index: 4;
+  display: block;
+  text-align: center;
+}
+
+.product-art-title {
+  color: var(--rank-text);
+  font-size: 1.02rem;
+  font-weight: 950;
+  line-height: 1;
+  text-shadow:
+    0 0 18px var(--rank-glow),
+    0 2px 18px rgba(0, 0, 0, 0.85);
+  word-break: break-word;
+}
+
+.product-art-detail {
+  display: inline-flex;
+  margin-top: 0.38rem;
+  border: 1px solid color-mix(in srgb, var(--rank-accent) 42%, rgba(255, 255, 255, 0.12));
+  border-radius: 0.35rem;
+  background: rgba(0, 0, 0, 0.44);
+  padding: 0.32rem 0.45rem;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.58rem;
+  font-weight: 950;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.34);
+}
+
+.product-art-fallback {
+  position: absolute;
+  inset: 1rem;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--rank-accent) 46%, #05070c), #05070c);
+  color: var(--rank-text);
+  font-size: 2rem;
+  font-weight: 950;
+  text-shadow: 0 0 18px var(--rank-glow);
+}
+
+.home-hero {
+  position: relative;
+  min-height: 28rem;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #070a12;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.55) inset,
+    0 28px 84px rgba(0, 0, 0, 0.36);
+}
+
+.home-hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.52;
+  filter: saturate(1.08) contrast(1.04);
+}
+
+.home-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(4, 7, 12, 0.1), rgba(4, 7, 12, 0.74)),
+    radial-gradient(circle at 50% 24%, rgba(34, 197, 94, 0.24), transparent 38%),
+    linear-gradient(90deg, rgba(4, 7, 12, 0.82), rgba(4, 7, 12, 0.18), rgba(4, 7, 12, 0.82));
 }
 
 .rank-art {

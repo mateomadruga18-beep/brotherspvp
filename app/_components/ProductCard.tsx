@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import Image from "next/image";
 import type { Product } from "../lib/catalog";
 import { getProductPriceLabel } from "../lib/catalog";
 import { AddToCartButton } from "./buttons";
@@ -14,57 +15,38 @@ function productTone(product: Product) {
   } as CSSProperties;
 }
 
-function RankArtwork({ product }: { product: Product }) {
-  return (
-    <div className="rank-art" aria-hidden="true">
-      <div className="rank-art-grid" />
-      <div className="rank-banner">
-        <span>{product.name}</span>
-      </div>
-      <div className="rank-character">
-        <div className="rank-character-head" />
-        <div className="rank-character-body" />
-        <div className="rank-character-arm rank-character-arm-left" />
-        <div className="rank-character-arm rank-character-arm-right" />
-        <div className="rank-character-leg rank-character-leg-left" />
-        <div className="rank-character-leg rank-character-leg-right" />
-      </div>
-      <div className="rank-art-copy">
-        <div className="rank-art-title">{product.name}</div>
-        <div className="rank-art-subtitle">RANGO PERMANENTE</div>
-      </div>
-      <div className="rank-art-band" />
-    </div>
-  );
-}
-
-function PackageArtwork({ product }: { product: Product }) {
+function ProductArtwork({ product }: { product: Product }) {
   const visual = product.visual;
   const kind = visual?.kind ?? product.category;
+  const imageSrc = visual?.imageSrc;
 
   return (
-    <div className={`package-art package-art-${kind}`} aria-hidden="true">
-      <div className="package-art-grid" />
-      <div className="package-shine" />
-      <div className="package-icon">
-        <div className="package-icon-core">
-          <span>{product.theme?.mark ?? product.name.slice(0, 2)}</span>
+    <div className={`product-art product-art-${kind}`}>
+      <div className="product-art-glow" aria-hidden="true" />
+      {imageSrc ? (
+        <Image
+          src={imageSrc}
+          alt={visual?.imageAlt ?? `Arte de ${product.name}`}
+          width={220}
+          height={220}
+          sizes="9rem"
+          className="product-art-image"
+        />
+      ) : (
+        <div className="product-art-fallback" aria-hidden="true">
+          {product.theme?.mark ?? product.name.slice(0, 2)}
         </div>
-      </div>
-      <div className="package-art-copy">
-        <div className="package-art-title">{visual?.label ?? product.name}</div>
-        {visual?.detail ? <div className="package-art-detail">{visual.detail}</div> : null}
+      )}
+      <div className="product-art-shade" aria-hidden="true" />
+      <div className="product-art-copy">
+        <div className="product-art-title">{visual?.label ?? product.name}</div>
+        <div className="product-art-detail">
+          {visual?.detail ?? (product.category === "rank" ? "Permanente" : product.badge)}
+        </div>
       </div>
       <div className="rank-art-band" />
     </div>
   );
-}
-
-function ProductArtwork({ product }: { product: Product }) {
-  if (product.category === "rank") {
-    return <RankArtwork product={product} />;
-  }
-  return <PackageArtwork product={product} />;
 }
 
 export function ProductCard({
@@ -86,27 +68,29 @@ export function ProductCard({
       />
 
       <div className="relative">
-        <ProductArtwork product={product} />
-
-        <div className="mt-4">
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              <div className="text-xs font-black uppercase text-white/55">
-                {product.badge ?? product.category.toUpperCase()}
+        <div className="grid grid-cols-[7.75rem_1fr] gap-4 sm:grid-cols-[9.5rem_1fr]">
+          <ProductArtwork product={product} />
+          <div className="min-w-0">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0">
+                <div className="text-xs font-black uppercase text-white/55">
+                  {product.badge ?? product.category.toUpperCase()}
+                </div>
+                <h3 className="mt-1 break-words text-2xl font-black text-white">
+                  {product.name}
+                </h3>
+                <p className="mt-2 text-sm font-semibold leading-6 text-white/68">
+                  {product.description}
+                </p>
               </div>
-              <h3 className="mt-1 break-words text-2xl font-black text-white">
-                {product.name}
-              </h3>
-              <p className="mt-2 text-sm font-semibold leading-6 text-white/68">
-                {product.description}
-              </p>
-            </div>
 
-            <div className="shrink-0 rounded-md border border-white/10 bg-black/30 px-3 py-2 text-right">
-              <div className="text-[11px] font-bold uppercase text-white/55">Precio</div>
-              <div className="text-base font-black text-white">{getProductPriceLabel(product)}</div>
+              <div className="shrink-0 rounded-md border border-white/10 bg-black/30 px-3 py-2 text-left sm:text-right">
+                <div className="text-[11px] font-bold uppercase text-white/55">Precio</div>
+                <div className="text-base font-black text-white">{getProductPriceLabel(product)}</div>
+              </div>
             </div>
           </div>
+        </div>
 
           {product.stats?.length ? (
             <dl className="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-white/10 bg-white/10 sm:grid-cols-5">
@@ -179,7 +163,6 @@ export function ProductCard({
               {product.unavailableReason ?? "Producto pendiente de configurar."}
             </div>
           )}
-        </div>
       </div>
     </article>
   );

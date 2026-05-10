@@ -21,11 +21,11 @@ export function StoreNavbar() {
       <div className="container flex h-16 items-center justify-between gap-4">
         <Link href="/" className="flex min-w-0 items-center gap-3">
           <Image
-            src="/assets/brotherspvp-logo.png"
+            src="/assets/brotherspvp-network-logo.png"
             alt="BrotherSPvP Network"
-            width={40}
-            height={40}
-            className="h-10 w-10 shrink-0 object-contain"
+            width={56}
+            height={56}
+            className="h-12 w-12 shrink-0 object-contain"
           />
           <div className="min-w-0 leading-tight">
             <div className="truncate text-sm font-extrabold text-white">BrotherSPvP</div>

@@ -2,31 +2,10 @@
 import Link from "next/link";
 import { ProductCard } from "./_components/ProductCard";
 import { StoreNavbar } from "./_components/StoreNavbar";
-import { getFeaturedProduct } from "./lib/catalog";
+import { formatUsd, getFeaturedProduct } from "./lib/catalog";
+import { getPaidBuyerStats } from "./server/repositories/ordersRepository";
 
-const recentBuyers = [
-  "ZZukit0",
-  "MateoPvP",
-  "KratosPvP",
-  "BrothersMC",
-  "ApexUser",
-  "VortexUY",
-  "NyxPlayer",
-  "ZenithPro",
-  "OblivionX",
-  "Nemesis_7",
-  "EonCraft",
-  "VIPSteve",
-  "MineAlex",
-  "PvPMax",
-  "RankHunter",
-  "LootKing",
-  "CrateFan",
-  "UltraCos",
-  "AzadaPro",
-  "MoneyBoost",
-  "BrotherPlus",
-];
+export const dynamic = "force-dynamic";
 
 const paymentMethods = [
   "PayPal",
@@ -50,8 +29,13 @@ function PlayerHead({ name }: { name: string }) {
   );
 }
 
-export default function Home() {
+export default async function Home() {
   const featuredProduct = getFeaturedProduct();
+  const buyerStats = await getPaidBuyerStats().catch((error) => {
+    console.error("[home] could not load paid buyer stats", error);
+    return { recentBuyers: [], topBuyer: null };
+  });
+  const { recentBuyers, topBuyer } = buyerStats;
 
   return (
     <div className="relative flex flex-1 flex-col overflow-hidden">
@@ -65,7 +49,7 @@ export default function Home() {
         <section className="container py-8 sm:py-10">
           <div className="grid gap-6 lg:grid-cols-[20rem_1fr]">
             <aside className="space-y-4">
-              <div className="rounded-lg border border-white/10 bg-white/[0.055] p-5">
+              <div className="rounded-lg border border-white/10 bg-white/[0.065] p-5 shadow-[0_18px_54px_rgba(0,0,0,0.28)]">
                 <div className="text-xs font-black uppercase text-white/55">Owner del servidor</div>
                 <div className="mt-4 flex items-center gap-4">
                   <img
@@ -83,34 +67,51 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="rounded-lg border border-white/10 bg-white/[0.055] p-5">
+              <div className="rounded-lg border border-white/10 bg-white/[0.065] p-5 shadow-[0_18px_54px_rgba(0,0,0,0.28)]">
                 <div className="text-xs font-black uppercase text-white/55">Top comprador</div>
-                <div className="mt-4 flex items-center gap-4">
-                  <img
-                    src="https://mc-heads.net/body/ZZukit0/120"
-                    alt="Top comprador ZZukit0"
-                    className="h-32 w-20 object-contain"
-                    loading="lazy"
-                  />
-                  <div>
-                    <div className="text-lg font-black text-[var(--foreground)]">ZZukit0</div>
-                    <div className="mt-1 text-sm font-semibold text-white/60">
-                      Quien mas ha gastado este mes.
+                {topBuyer ? (
+                  <div className="mt-4 flex items-center gap-4">
+                    <img
+                      src={`https://mc-heads.net/body/${encodeURIComponent(topBuyer.username)}/120`}
+                      alt={`Top comprador ${topBuyer.username}`}
+                      className="h-32 w-20 object-contain"
+                      loading="lazy"
+                    />
+                    <div>
+                      <div className="text-lg font-black text-[var(--foreground)]">
+                        {topBuyer.username}
+                      </div>
+                      <div className="mt-1 text-sm font-semibold text-emerald-200">
+                        {formatUsd(topBuyer.totalUsd)} gastados
+                      </div>
+                      <div className="mt-2 text-xs leading-5 text-white/55">
+                        {topBuyer.orderCount} compra{topBuyer.orderCount === 1 ? "" : "s"} confirmada
+                      </div>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="mt-4 rounded-md border border-white/10 bg-black/25 px-4 py-4 text-sm leading-6 text-white/65">
+                    Aun no hay compras confirmadas. Cuando alguien pague, aparece aca.
+                  </div>
+                )}
               </div>
 
-              <div className="rounded-lg border border-white/10 bg-white/[0.055] p-5">
+              <div className="rounded-lg border border-white/10 bg-white/[0.065] p-5 shadow-[0_18px_54px_rgba(0,0,0,0.28)]">
                 <div className="text-xs font-black uppercase text-white/55">Ultimos compradores</div>
-                <div className="mt-4 grid grid-cols-7 gap-2">
-                  {recentBuyers.map((buyer) => (
-                    <PlayerHead key={buyer} name={buyer} />
-                  ))}
-                </div>
+                {recentBuyers.length ? (
+                  <div className="mt-4 grid grid-cols-7 gap-2">
+                    {recentBuyers.map((buyer) => (
+                      <PlayerHead key={buyer.username} name={buyer.username} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="mt-4 rounded-md border border-white/10 bg-black/25 px-4 py-4 text-sm leading-6 text-white/65">
+                    Sin compradores reales todavia.
+                  </div>
+                )}
               </div>
 
-              <div className="rounded-lg border border-white/10 bg-white/[0.055] p-5">
+              <div className="rounded-lg border border-white/10 bg-white/[0.065] p-5 shadow-[0_18px_54px_rgba(0,0,0,0.28)]">
                 <div className="text-xs font-black uppercase text-white/55">Contactanos</div>
                 <p className="mt-3 text-sm leading-6 text-white/70">
                   Soporte, dudas de compra o problemas de entrega.
@@ -125,11 +126,21 @@ export default function Home() {
             </aside>
 
             <div className="min-w-0">
-              <section className="rounded-lg border border-white/10 bg-white/[0.045] p-6 text-center sm:p-8">
+              <section className="home-hero">
+                {featuredProduct.visual?.imageSrc ? (
+                  <img
+                    src={featuredProduct.visual.imageSrc}
+                    alt=""
+                    className="home-hero-bg"
+                    aria-hidden="true"
+                  />
+                ) : null}
+                <div className="home-hero-overlay" aria-hidden="true" />
+                <div className="relative z-10 p-6 text-center sm:p-8 lg:p-10">
                 <img
-                  src="/assets/brotherspvp-logo.png"
+                  src="/assets/brotherspvp-network-logo.png"
                   alt="BrotherSPvP Network"
-                  className="mx-auto h-auto w-full max-w-md object-contain"
+                  className="mx-auto h-auto w-full max-w-md object-contain drop-shadow-[0_18px_42px_rgba(0,0,0,0.75)]"
                 />
                 <div className="mx-auto mt-6 max-w-3xl">
                   <div className="text-xs font-black uppercase text-emerald-200">
@@ -154,6 +165,7 @@ export default function Home() {
                     Ver llaves
                   </Link>
                 </div>
+                </div>
               </section>
 
               <section className="mt-6">
@@ -172,7 +184,7 @@ export default function Home() {
               </section>
 
               <section className="mt-6 grid gap-4 xl:grid-cols-2">
-                <div className="rounded-lg border border-white/10 bg-white/[0.055] p-5">
+                <div className="rounded-lg border border-white/10 bg-white/[0.065] p-5 shadow-[0_18px_54px_rgba(0,0,0,0.28)]">
                   <div className="text-xs font-black uppercase text-white/55">
                     Metodos de pago disponibles
                   </div>
@@ -191,7 +203,7 @@ export default function Home() {
                   </p>
                 </div>
 
-                <div className="rounded-lg border border-white/10 bg-white/[0.055] p-5">
+                <div className="rounded-lg border border-white/10 bg-white/[0.065] p-5 shadow-[0_18px_54px_rgba(0,0,0,0.28)]">
                   <div className="text-xs font-black uppercase text-red-200">
                     Politica de reembolsos
                   </div>

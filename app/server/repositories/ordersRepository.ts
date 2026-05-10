@@ -83,3 +83,69 @@ export async function updateOrderStatusRecord(params: {
   log("status-updated", { orderId: result.id, status: result.status, provider: params.provider });
   return toAppOrder(result);
 }
+
+export type BuyerStat = {
+  username: string;
+  totalUsd: number;
+  orderCount: number;
+  lastPurchaseAt: number;
+};
+
+export async function getPaidBuyerStats(recentLimit = 21): Promise<{
+  recentBuyers: BuyerStat[];
+  topBuyer: BuyerStat | null;
+}> {
+  const [recentRows, topRows] = await Promise.all([
+    prisma.order.findMany({
+      where: { status: OrderStatus.paid },
+      orderBy: { updatedAt: "desc" },
+      select: {
+        username: true,
+        total: true,
+        updatedAt: true,
+      },
+      take: Math.max(recentLimit * 4, recentLimit),
+    }),
+    prisma.order.groupBy({
+      by: ["username"],
+      where: { status: OrderStatus.paid },
+      _sum: { total: true },
+      _count: { _all: true },
+      _max: { updatedAt: true },
+      orderBy: { _sum: { total: "desc" } },
+      take: 1,
+    }),
+  ]);
+
+  const seen = new Set<string>();
+  const recentBuyers: BuyerStat[] = [];
+
+  for (const row of recentRows) {
+    const key = row.username.toLowerCase();
+    if (seen.has(key)) continue;
+
+    seen.add(key);
+    recentBuyers.push({
+      username: row.username,
+      totalUsd: Number(row.total),
+      orderCount: 1,
+      lastPurchaseAt: row.updatedAt.getTime(),
+    });
+
+    if (recentBuyers.length >= recentLimit) break;
+  }
+
+  const topRow = topRows[0];
+
+  return {
+    recentBuyers,
+    topBuyer: topRow
+      ? {
+          username: topRow.username,
+          totalUsd: Number(topRow._sum.total ?? 0),
+          orderCount: topRow._count._all,
+          lastPurchaseAt: topRow._max.updatedAt?.getTime() ?? 0,
+        }
+      : null,
+  };
+}

@@ -34,15 +34,21 @@ function safeParseLines(value: string | null): CartLine[] {
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [lines, setLines] = useState<CartLine[]>(() =>
-    typeof window === "undefined"
-      ? []
-      : safeParseLines(window.localStorage.getItem(STORAGE_KEY)),
-  );
+  const [lines, setLines] = useState<CartLine[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    const storedLines = safeParseLines(window.localStorage.getItem(STORAGE_KEY));
+    queueMicrotask(() => {
+      setLines(storedLines);
+      setLoaded(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!loaded) return;
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(lines));
-  }, [lines]);
+  }, [lines, loaded]);
 
   const api = useMemo<CartState>(() => {
     function add(productId: string, quantity = 1) {
