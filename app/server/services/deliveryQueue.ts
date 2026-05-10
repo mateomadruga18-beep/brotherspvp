@@ -58,6 +58,7 @@ function validateDeliveryCommand(command: string) {
     new RegExp(`^lootbox give ${usernamePattern} Premium 24$`, "i"),
     new RegExp(`^armadura give ${usernamePattern} boosteritem 1$`, "i"),
     new RegExp(`^azada add ${usernamePattern} 500000$`, "i"),
+    new RegExp(`^Multiplier set Permanent 20\\.0 ${usernamePattern}$`, "i"),
     new RegExp(
       `^bc &A&lSHOP &7\\| &e&L${INVERTED_EXCLAMATION}El jugador &a&l${usernamePattern} &e&lha hecho una compra en la tienda &d&lshop\\.brotherspvp\\.net&e&l muchas gracias!$`,
       "i",
