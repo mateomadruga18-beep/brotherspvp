@@ -11,20 +11,20 @@ export const dynamic = "force-dynamic";
 const paymentMethods = [
   {
     name: "Tarjetas",
-    description: "Credito y debito en checkout.",
-    imageSrc: "/assets/payments/cards.svg",
+    description: "Visa, Mastercard, AmEx y Discover.",
+    imageSrc: "/assets/payments/cards-real.jpg",
     imageAlt: "Tarjetas de credito y debito",
   },
   {
     name: "PayPal",
     description: "Pago internacional en USD.",
-    imageSrc: "/assets/payments/paypal.svg",
+    imageSrc: "/assets/payments/paypal-real.jpg",
     imageAlt: "PayPal",
   },
   {
     name: "Mercado Pago",
     description: "Checkout local con pago en UYU.",
-    imageSrc: "/assets/payments/mercadopago.svg",
+    imageSrc: "/assets/payments/mercadopago-real.svg",
     imageAlt: "Mercado Pago",
   },
 ];
@@ -221,11 +221,11 @@ export default async function Home() {
                         key={method.name}
                         className="rounded-md border border-white/10 bg-black/25 p-3 text-center"
                       >
-                        <div className="grid h-14 place-items-center rounded-md bg-white px-3 py-2 shadow-[0_12px_28px_rgba(0,0,0,0.24)]">
+                        <div className="grid h-16 place-items-center overflow-hidden rounded-md bg-white px-3 py-2 shadow-[0_12px_28px_rgba(0,0,0,0.24)]">
                           <img
                             src={method.imageSrc}
                             alt={method.imageAlt}
-                            className="max-h-10 w-full object-contain"
+                            className="max-h-12 w-full object-contain"
                             loading="lazy"
                           />
                         </div>
