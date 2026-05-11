@@ -14,6 +14,7 @@ const paymentMethods = [
     description: "Visa, Mastercard, AmEx y Discover.",
     imageSrc: "/assets/payments/cards-real.jpg",
     imageAlt: "Tarjetas de credito y debito",
+    imageClassName: "h-[4.2rem] max-w-none -translate-y-2 object-contain",
   },
   {
     name: "PayPal",
@@ -225,7 +226,7 @@ export default async function Home() {
                           <img
                             src={method.imageSrc}
                             alt={method.imageAlt}
-                            className="max-h-12 w-full object-contain"
+                            className={method.imageClassName ?? "max-h-12 w-full object-contain"}
                             loading="lazy"
                           />
                         </div>
