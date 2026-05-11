@@ -28,12 +28,12 @@ export default function StorePage() {
           <div>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <h2 className="text-2xl font-black text-white">Rangos permanentes</h2>
+                <h2 className="section-title">Rangos permanentes</h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-white/65 sm:text-base">
                   Diez rangos con imagen personalizada, muneco por color y beneficios completos.
                 </p>
               </div>
-              <Link className="text-sm font-semibold text-white/70 transition hover:text-white" href="/ranks">
+              <Link className="section-link" href="/ranks">
                 Comparar rangos
               </Link>
             </div>
@@ -43,6 +43,7 @@ export default function StorePage() {
                   key={product.id}
                   product={product}
                   primaryCtaVariant={index >= ranks.length - 2 ? "secondary" : "primary"}
+                  motionDelay={Math.min(index, 5) * 0.035}
                 />
               ))}
             </div>
@@ -51,18 +52,23 @@ export default function StorePage() {
           <div>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <h2 className="text-2xl font-black text-white">Llaves</h2>
+                <h2 className="section-title">Llaves</h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-white/65 sm:text-base">
                   La llave BROTHERS se entrega con x7 llaves para abrir crate dentro del servidor.
                 </p>
               </div>
-              <Link className="text-sm font-semibold text-white/70 transition hover:text-white" href="/crates">
+              <Link className="section-link" href="/crates">
                 Ver llaves
               </Link>
             </div>
             <div className="mt-6 grid gap-5 xl:grid-cols-2">
-              {crates.map((product) => (
-                <ProductCard key={product.id} product={product} primaryCtaVariant="primary" />
+              {crates.map((product, index) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  primaryCtaVariant="primary"
+                  motionDelay={index * 0.035}
+                />
               ))}
             </div>
           </div>
@@ -70,21 +76,22 @@ export default function StorePage() {
           <div>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <h2 className="text-2xl font-black text-white">Exclusivos</h2>
+                <h2 className="section-title">Exclusivos</h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-white/65 sm:text-base">
                   Bundles, lootboxes, booster de armadura, XP de azada y accesos especiales.
                 </p>
               </div>
-              <Link className="text-sm font-semibold text-white/70 transition hover:text-white" href="/exclusivos">
+              <Link className="section-link" href="/exclusivos">
                 Ver exclusivos
               </Link>
             </div>
             <div className="mt-6 grid gap-5 xl:grid-cols-2">
-              {exclusives.map((product) => (
+              {exclusives.map((product, index) => (
                 <ProductCard
                   key={product.id}
                   product={product}
                   primaryCtaVariant={product.featured ? "secondary" : "primary"}
+                  motionDelay={Math.min(index, 5) * 0.035}
                 />
               ))}
             </div>

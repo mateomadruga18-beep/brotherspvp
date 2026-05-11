@@ -28,7 +28,7 @@ export default function CheckoutFailurePage() {
       }
     >
       <section className="container pb-14 sm:pb-16">
-        <div className="rounded-lg border border-white/10 bg-white/[0.055] p-8 sm:p-10">
+        <div className="checkout-surface p-8 sm:p-10">
           <div className="text-sm font-semibold text-white/70">
             Si el problema sigue, prueba otro metodo de pago o intenta mas tarde.
           </div>

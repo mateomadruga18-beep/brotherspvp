@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import { FadeIn } from "./_components/Motion";
 import { ProductCard } from "./_components/ProductCard";
 import { StoreNavbar } from "./_components/StoreNavbar";
 import { formatUsd, getFeaturedProduct } from "./lib/catalog";
@@ -20,12 +21,17 @@ const paymentMethods = [
 
 function PlayerHead({ name }: { name: string }) {
   return (
-    <img
-      src={`https://mc-heads.net/avatar/${encodeURIComponent(name)}/48`}
-      alt={name}
-      className="size-10 rounded-md border border-white/10 bg-black/40 object-cover"
-      loading="lazy"
-    />
+    <span className="buyer-head group relative inline-flex" title={name}>
+      <img
+        src={`https://mc-heads.net/avatar/${encodeURIComponent(name)}/48`}
+        alt={name}
+        className="size-10 rounded-md border border-white/10 bg-black/40 object-cover"
+        loading="lazy"
+      />
+      <span className="buyer-tooltip pointer-events-none absolute left-1/2 top-0 z-20 -translate-x-1/2 -translate-y-[calc(100%+0.45rem)] whitespace-nowrap rounded-md border border-amber-200/20 bg-black/85 px-2.5 py-1.5 text-xs font-black text-amber-100 opacity-0 shadow-[0_14px_34px_rgba(0,0,0,0.45)] backdrop-blur-md transition duration-150 group-hover:opacity-100 group-focus-within:opacity-100">
+        {name}
+      </span>
+    </span>
   );
 }
 
@@ -49,7 +55,7 @@ export default async function Home() {
         <section className="container py-8 sm:py-10">
           <div className="grid gap-6 lg:grid-cols-[20rem_1fr]">
             <aside className="space-y-4">
-              <div className="rounded-lg border border-white/10 bg-white/[0.065] p-5 shadow-[0_18px_54px_rgba(0,0,0,0.28)]">
+              <FadeIn className="premium-panel p-5">
                 <div className="text-xs font-black uppercase text-white/55">Owner del servidor</div>
                 <div className="mt-4 flex items-center gap-4">
                   <img
@@ -65,9 +71,9 @@ export default async function Home() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </FadeIn>
 
-              <div className="rounded-lg border border-white/10 bg-white/[0.065] p-5 shadow-[0_18px_54px_rgba(0,0,0,0.28)]">
+              <FadeIn className="premium-panel p-5" delay={0.04}>
                 <div className="text-xs font-black uppercase text-white/55">Top comprador</div>
                 {topBuyer ? (
                   <div className="mt-4 flex items-center gap-4">
@@ -94,9 +100,9 @@ export default async function Home() {
                     Aun no hay compras confirmadas. Cuando alguien pague, aparece aca.
                   </div>
                 )}
-              </div>
+              </FadeIn>
 
-              <div className="rounded-lg border border-white/10 bg-white/[0.065] p-5 shadow-[0_18px_54px_rgba(0,0,0,0.28)]">
+              <FadeIn className="premium-panel p-5" delay={0.08}>
                 <div className="text-xs font-black uppercase text-white/55">Ultimos compradores</div>
                 {recentBuyers.length ? (
                   <div className="mt-4 grid grid-cols-7 gap-2">
@@ -109,9 +115,9 @@ export default async function Home() {
                     Sin compradores reales todavia.
                   </div>
                 )}
-              </div>
+              </FadeIn>
 
-              <div className="rounded-lg border border-white/10 bg-white/[0.065] p-5 shadow-[0_18px_54px_rgba(0,0,0,0.28)]">
+              <FadeIn className="premium-panel p-5" delay={0.12}>
                 <div className="text-xs font-black uppercase text-white/55">Contactanos</div>
                 <p className="mt-3 text-sm leading-6 text-white/70">
                   Soporte, dudas de compra o problemas de entrega.
@@ -122,11 +128,11 @@ export default async function Home() {
                 >
                   mateomadruga18@gmail.com
                 </a>
-              </div>
+              </FadeIn>
             </aside>
 
             <div className="min-w-0">
-              <section className="home-hero">
+              <FadeIn className="home-hero">
                 {featuredProduct.visual?.imageSrc ? (
                   <img
                     src={featuredProduct.visual.imageSrc}
@@ -136,22 +142,33 @@ export default async function Home() {
                   />
                 ) : null}
                 <div className="home-hero-overlay" aria-hidden="true" />
-                <div className="relative z-10 p-6 text-center sm:p-8 lg:p-10">
+                <div className="home-hero-content">
                 <img
                   src="/assets/brotherspvp-network-logo.png"
                   alt="BrotherSPvP Network"
-                  className="mx-auto h-auto w-full max-w-md object-contain drop-shadow-[0_18px_42px_rgba(0,0,0,0.75)]"
+                  className="home-logo mx-auto h-auto w-full max-w-md object-contain"
                 />
                 <div className="mx-auto mt-6 max-w-3xl">
-                  <div className="text-xs font-black uppercase text-emerald-200">
+                  <div className="mx-auto store-kicker">
                     Tienda oficial
                   </div>
-                  <h1 className="mt-3 text-3xl font-black leading-tight text-white sm:text-5xl">
-                    Compra paquetes, rangos y beneficios para BrotherSPvP.
+                  <h1 className="gradient-title mt-4 text-4xl font-black leading-[0.98] sm:text-6xl">
+                    DOMINA EL PRISON MAS EPICO
                   </h1>
-                  <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-white/70 sm:text-base">
+                  <p className="mx-auto mt-5 max-w-2xl text-sm font-medium leading-7 text-white/74 sm:text-base">
                     Pagos reales activos con PayPal y Mercado Pago. Las compras aprobadas se entregan al usuario de Minecraft indicado en checkout.
                   </p>
+                </div>
+                <div className="hero-badge-row mt-6 justify-center">
+                  <span className="hero-badge">
+                    <strong>Best Seller</strong> {featuredProduct.name}
+                  </span>
+                  <span className="hero-badge">
+                    <strong>Prison OP</strong> 1.21
+                  </span>
+                  <span className="hero-badge">
+                    <strong>Entrega</strong> automatica
+                  </span>
                 </div>
 
                 <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
@@ -166,25 +183,25 @@ export default async function Home() {
                   </Link>
                 </div>
                 </div>
-              </section>
+              </FadeIn>
 
               <section className="mt-6">
                 <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div>
-                    <h2 className="text-2xl font-black text-white">Paquete destacado</h2>
+                    <h2 className="section-title">Paquete destacado</h2>
                     <p className="mt-1 text-sm leading-6 text-white/65">
                       Producto recomendado para progresar rapido dentro del servidor.
                     </p>
                   </div>
-                  <Link className="text-sm font-semibold text-white/70 transition hover:text-white" href="/exclusivos">
+                  <Link className="section-link" href="/exclusivos">
                     Ver todos los exclusivos
                   </Link>
                 </div>
-                <ProductCard product={featuredProduct} primaryCtaVariant="secondary" />
+                <ProductCard product={featuredProduct} primaryCtaVariant="secondary" motionDelay={0.06} />
               </section>
 
               <section className="mt-6 grid gap-4 xl:grid-cols-2">
-                <div className="rounded-lg border border-white/10 bg-white/[0.065] p-5 shadow-[0_18px_54px_rgba(0,0,0,0.28)]">
+                <FadeIn className="premium-panel p-5" delay={0.08}>
                   <div className="text-xs font-black uppercase text-white/55">
                     Metodos de pago disponibles
                   </div>
@@ -201,9 +218,9 @@ export default async function Home() {
                   <p className="mt-4 text-sm leading-6 text-white/65">
                     PayPal cobra en USD. Mercado Pago usa checkout real para Uruguay y convierte la compra a UYU.
                   </p>
-                </div>
+                </FadeIn>
 
-                <div className="rounded-lg border border-white/10 bg-white/[0.065] p-5 shadow-[0_18px_54px_rgba(0,0,0,0.28)]">
+                <FadeIn className="premium-panel p-5" delay={0.12}>
                   <div className="text-xs font-black uppercase text-red-200">
                     Politica de reembolsos
                   </div>
@@ -218,7 +235,7 @@ export default async function Home() {
                       Soporte
                     </a>
                   </div>
-                </div>
+                </FadeIn>
               </section>
             </div>
           </div>

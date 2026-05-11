@@ -12,8 +12,13 @@ export default function CratesPage() {
     >
       <section className="container pb-14 sm:pb-16">
         <div className="grid gap-5 xl:grid-cols-2">
-          {crates.map((product) => (
-            <ProductCard key={product.id} product={product} primaryCtaVariant="primary" />
+          {crates.map((product, index) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              primaryCtaVariant="primary"
+              motionDelay={index * 0.035}
+            />
           ))}
         </div>
       </section>

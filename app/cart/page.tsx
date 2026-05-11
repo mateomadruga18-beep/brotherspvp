@@ -55,7 +55,7 @@ export default function CartPage() {
     >
       <section className="container pb-14 sm:pb-16">
         {enriched.length === 0 ? (
-          <div className="rounded-lg border border-white/10 bg-white/[0.055] p-8 sm:p-10">
+          <div className="checkout-surface p-8 sm:p-10">
             <div className="text-lg font-black text-white">Tu carrito esta vacio</div>
             <div className="mt-2 text-sm leading-6 text-white/70">
               Explora la tienda y agrega el rango, llave o exclusivo que quieras comprar.
@@ -76,7 +76,7 @@ export default function CartPage() {
                 {enriched.map((line) => (
                   <div
                     key={line.productId}
-                    className="group relative overflow-hidden rounded-lg border border-white/10 bg-white/[0.055] p-5 transition duration-300 hover:border-white/20"
+                    className="checkout-surface group p-5 transition duration-300 hover:border-white/20"
                   >
                     <div
                       className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${line.product.gradientClass} opacity-0 transition duration-300 group-hover:opacity-100`}
@@ -168,7 +168,7 @@ export default function CartPage() {
             </div>
 
             <div className="lg:col-span-4">
-              <div className="sticky top-24 rounded-lg border border-white/10 bg-white/[0.055] p-5">
+              <div className="checkout-surface sticky top-24 p-5">
                 <div className="text-lg font-black text-white">Resumen</div>
                 <div className="mt-4 space-y-3">
                   <div className="flex items-center justify-between text-sm font-semibold text-white/70">

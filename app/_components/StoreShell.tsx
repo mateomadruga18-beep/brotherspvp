@@ -1,4 +1,5 @@
 import React from "react";
+import { FadeIn } from "./Motion";
 import { StoreNavbar } from "./StoreNavbar";
 
 export function StoreShell({
@@ -22,17 +23,33 @@ export function StoreShell({
 
       <main className="flex-1">
         {(title || subtitle || right) && (
-          <section className="container py-9 sm:py-11">
-            <div className="grid gap-5 border-b border-white/10 pb-7 sm:pb-9 lg:grid-cols-12 lg:items-end">
-              <div className="lg:col-span-8">
-                {title && <h1 className="text-3xl font-black text-white sm:text-4xl">{title}</h1>}
+          <section className="page-hero">
+            <div className="container page-hero-inner">
+              <FadeIn className="page-hero-card max-w-4xl">
+                <div className="store-kicker">BrotherSPvP Prison OP</div>
+                {title && (
+                  <h1 className="gradient-title mt-4 text-4xl font-black leading-[0.98] tracking-normal sm:text-5xl lg:text-6xl">
+                    {title}
+                  </h1>
+                )}
                 {subtitle && (
-                  <p className="mt-3 max-w-3xl text-sm leading-6 text-white/70 sm:text-base">
+                  <p className="mt-4 max-w-3xl text-sm font-medium leading-7 text-white/72 sm:text-base">
                     {subtitle}
                   </p>
                 )}
-              </div>
-              {right && <div className="lg:col-span-4 lg:justify-self-end">{right}</div>}
+                <div className="hero-badge-row mt-5">
+                  <span className="hero-badge">
+                    <strong>Prison OP</strong> 1.21
+                  </span>
+                  <span className="hero-badge">
+                    <strong>Entrega</strong> automatica
+                  </span>
+                  <span className="hero-badge">
+                    <strong>Checkout</strong> seguro
+                  </span>
+                </div>
+              </FadeIn>
+              {right && <FadeIn className="lg:justify-self-end" delay={0.08}>{right}</FadeIn>}
             </div>
           </section>
         )}
@@ -40,7 +57,7 @@ export function StoreShell({
         {children}
       </main>
 
-      <footer className="border-t border-white/10 bg-black/25">
+      <footer className="border-t border-white/10 bg-black/35 backdrop-blur-md">
         <div className="container flex flex-col gap-3 py-9 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between">
           <div>BrotherSPvP. Tienda no afiliada con Mojang ni Microsoft.</div>
           <div className="flex items-center gap-5">

@@ -100,7 +100,7 @@ function CheckoutSuccessContent() {
     >
       <section className="container pb-14 sm:pb-16">
         {!receipt ? (
-          <div className="rounded-lg border border-white/10 bg-white/[0.055] p-8 sm:p-10">
+          <div className="checkout-surface p-8 sm:p-10">
             <div className="text-lg font-black text-white">No encontre el recibo</div>
             <div className="mt-2 text-sm leading-6 text-white/70">
               Si actualizaste la pagina despues del pago, puede faltar la informacion local del recibo.
@@ -117,7 +117,7 @@ function CheckoutSuccessContent() {
         ) : (
           <div className="grid gap-6 lg:grid-cols-12">
             <div className="lg:col-span-7">
-              <div className="rounded-lg border border-white/10 bg-white/[0.055] p-6 sm:p-8">
+              <div className="checkout-surface p-6 sm:p-8">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="text-sm font-black text-white">Confirmacion</div>
@@ -156,7 +156,7 @@ function CheckoutSuccessContent() {
                   totalUsd={receipt.totalUsd}
                   compact
                 />
-                <div className="rounded-lg border border-white/10 bg-white/[0.055] p-5">
+                <div className="checkout-surface p-5">
                   <div className="text-sm font-black text-white">Entrega</div>
                   <div className="mt-2 text-xs font-semibold leading-6 text-white/65">
                     Los beneficios se aplican al usuario{" "}

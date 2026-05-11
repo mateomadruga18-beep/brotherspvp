@@ -15,7 +15,7 @@ export function OrderSummary({
   compact?: boolean;
 }) {
   return (
-    <div className="rounded-lg border border-white/10 bg-white/[0.055] p-5">
+    <div className="checkout-surface p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-sm font-black text-white">Resumen del pedido</div>

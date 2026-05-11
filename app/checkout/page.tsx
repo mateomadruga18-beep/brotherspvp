@@ -85,7 +85,7 @@ export default function CheckoutPage() {
         }
       >
         <section className="container pb-14 sm:pb-16">
-          <div className="rounded-lg border border-white/10 bg-white/[0.055] p-8 sm:p-10">
+          <div className="checkout-surface p-8 sm:p-10">
             <div className="text-sm font-semibold text-white/70">
               Agrega un producto primero y vuelve al checkout.
             </div>
@@ -116,7 +116,7 @@ export default function CheckoutPage() {
       <section className="container pb-14 sm:pb-16">
         <div className="grid gap-6 lg:grid-cols-12">
           <div className="lg:col-span-7">
-            <div className="rounded-lg border border-white/10 bg-white/[0.055] p-6 sm:p-8">
+            <div className="checkout-surface p-6 sm:p-8">
               <div className="text-sm font-black text-white">Datos de la cuenta</div>
               <div className="mt-5">
                 <CheckoutField
@@ -214,7 +214,7 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.055] p-6 sm:p-8">
+            <div className="checkout-surface mt-4 p-6 sm:p-8">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="text-sm font-black text-white">Quieres cancelar?</div>
@@ -232,7 +232,7 @@ export default function CheckoutPage() {
           <div className="lg:col-span-5">
             <div className="sticky top-24 space-y-4">
               <OrderSummary lines={cartLines} subtotalUsd={subtotalUsd} totalUsd={totalUsd} />
-              <div className="rounded-lg border border-white/10 bg-white/[0.055] p-5">
+              <div className="checkout-surface p-5">
                 <div className="text-sm font-black text-white">Seguridad</div>
                 <div className="mt-2 text-xs font-semibold leading-6 text-white/65">
                   No guardamos secretos de pago en el navegador. La confirmacion final se procesa del lado del servidor.

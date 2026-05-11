@@ -7,7 +7,7 @@ export default function RanksPage() {
 
   return (
     <StoreShell
-      title="Rangos VIP"
+      title="DOMINA EL PRISON MAS EPICO"
       subtitle="Elige tu rango permanente para BrotherSPvP. Cada rango incluye tag, multiplicador, descuento de RankUP, Armor Boost, parcelas, recursos de compra y comandos exclusivos."
     >
       <section className="container pb-14 sm:pb-16">
@@ -17,6 +17,7 @@ export default function RanksPage() {
               key={product.id}
               product={product}
               primaryCtaVariant={index >= ranks.length - 2 ? "secondary" : "primary"}
+              motionDelay={Math.min(index, 5) * 0.035}
             />
           ))}
         </div>

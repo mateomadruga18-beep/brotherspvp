@@ -12,11 +12,12 @@ export default function ExclusivosPage() {
     >
       <section className="container pb-14 sm:pb-16">
         <div className="grid gap-5 xl:grid-cols-2">
-          {products.map((product) => (
+          {products.map((product, index) => (
             <ProductCard
               key={product.id}
               product={product}
               primaryCtaVariant={product.featured ? "secondary" : "primary"}
+              motionDelay={Math.min(index, 5) * 0.035}
             />
           ))}
         </div>
