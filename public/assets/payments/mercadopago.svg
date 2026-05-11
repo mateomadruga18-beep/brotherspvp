@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="128" viewBox="0 0 320 128" role="img" aria-label="Mercado Pago">
+  <rect width="320" height="128" rx="18" fill="#e5f6ff"/>
+  <ellipse cx="84" cy="58" rx="48" ry="32" fill="#00a7e1"/>
+  <path d="M51 58c9-12 20-18 33-18 13 0 24 6 33 18-9 12-20 18-33 18-13 0-24-6-33-18Z" fill="#ffffff" opacity=".92"/>
+  <path d="M66 58c5-6 11-9 18-9s13 3 18 9c-5 6-11 9-18 9s-13-3-18-9Z" fill="#00a7e1"/>
+  <path d="M72 60c4 4 8 6 12 6s8-2 12-6" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+  <text x="149" y="57" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="800" fill="#084b6f">Mercado</text>
+  <text x="149" y="88" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="800" fill="#084b6f">Pago</text>
+  <circle cx="279" cy="33" r="8" fill="#00a7e1" opacity=".3"/>
+  <circle cx="264" cy="98" r="6" fill="#00a7e1" opacity=".24"/>
+</svg>

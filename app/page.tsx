@@ -9,14 +9,24 @@ import { getPaidBuyerStats } from "./server/repositories/ordersRepository";
 export const dynamic = "force-dynamic";
 
 const paymentMethods = [
-  "PayPal",
-  "Mercado Pago",
-  "Tarjetas",
-  "Debito",
-  "Credito",
-  "UYU",
-  "USD",
-  "Checkout seguro",
+  {
+    name: "Tarjetas",
+    description: "Credito y debito en checkout.",
+    imageSrc: "/assets/payments/cards.svg",
+    imageAlt: "Tarjetas de credito y debito",
+  },
+  {
+    name: "PayPal",
+    description: "Pago internacional en USD.",
+    imageSrc: "/assets/payments/paypal.svg",
+    imageAlt: "PayPal",
+  },
+  {
+    name: "Mercado Pago",
+    description: "Checkout local con pago en UYU.",
+    imageSrc: "/assets/payments/mercadopago.svg",
+    imageAlt: "Mercado Pago",
+  },
 ];
 
 function PlayerHead({ name }: { name: string }) {
@@ -205,18 +215,29 @@ export default async function Home() {
                   <div className="text-xs font-black uppercase text-white/55">
                     Metodos de pago disponibles
                   </div>
-                  <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
                     {paymentMethods.map((method) => (
                       <div
-                        key={method}
-                        className="rounded-md border border-white/10 bg-black/25 px-3 py-3 text-center text-xs font-black text-white/80"
+                        key={method.name}
+                        className="rounded-md border border-white/10 bg-black/25 p-3 text-center"
                       >
-                        {method}
+                        <div className="grid h-14 place-items-center rounded-md bg-white px-3 py-2 shadow-[0_12px_28px_rgba(0,0,0,0.24)]">
+                          <img
+                            src={method.imageSrc}
+                            alt={method.imageAlt}
+                            className="max-h-10 w-full object-contain"
+                            loading="lazy"
+                          />
+                        </div>
+                        <div className="mt-3 text-xs font-black text-white/88">{method.name}</div>
+                        <div className="mt-1 text-[11px] font-semibold leading-4 text-white/55">
+                          {method.description}
+                        </div>
                       </div>
                     ))}
                   </div>
                   <p className="mt-4 text-sm leading-6 text-white/65">
-                    PayPal cobra en USD. Mercado Pago usa checkout real para Uruguay y convierte la compra a UYU.
+                    Aceptamos tarjetas, PayPal y Mercado Pago. PayPal cobra en USD y Mercado Pago convierte la compra a UYU.
                   </p>
                 </FadeIn>
 
