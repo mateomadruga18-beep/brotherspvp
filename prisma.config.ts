@@ -1,4 +1,7 @@
 import { defineConfig } from "prisma/config";
+import { loadEnvConfig } from "@next/env";
+
+loadEnvConfig(process.cwd());
 
 function datasourceUrl(): string {
   const direct = process.env.DIRECT_URL;

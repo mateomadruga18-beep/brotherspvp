@@ -92,6 +92,12 @@ export async function POST(request: Request) {
       username: user.value,
       items: items.value,
       paymentMethod: "paypal",
+      evidence: {
+        clientIp: context.ip,
+        clientIpHash: context.ipHash,
+        userAgent: context.userAgent,
+        checkoutRequestId: context.requestId,
+      },
     });
     if (!created.ok) {
       return badRequest("INVALID_ITEMS", created.reason, {

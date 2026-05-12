@@ -1,6 +1,6 @@
 import { getPayPal } from "../../../server/services/paypalClient";
 import { getOrder } from "../../../server/services/orderStore";
-import { registerPaymentReference } from "../../../server/services/paymentConfirmation";
+import { confirmPaymentEvent, registerPaymentReference } from "../../../server/services/paymentConfirmation";
 import { readJsonBody } from "../../../server/security/body";
 import { enforceRateLimit } from "../../../server/security/rateLimit";
 import { applyRouteSecurity } from "../../../server/security/routeSecurity";
@@ -18,6 +18,43 @@ type CaptureBody = {
   paypalOrderId?: string;
   orderId?: string;
 };
+
+function clean(value: unknown, maxLength = 180) {
+  return typeof value === "string"
+    ? value.normalize("NFKC").replace(/[\u0000-\u001F\u007F]/g, "").trim().slice(0, maxLength)
+    : null;
+}
+
+function pickPayerInfo(value: {
+  payer?: {
+    emailAddress?: string;
+    email_address?: string;
+    payerId?: string;
+    payer_id?: string;
+    name?: {
+      givenName?: string;
+      given_name?: string;
+      surname?: string;
+    };
+  };
+}) {
+  const payer = value.payer;
+  if (!payer) {
+    return { payerEmail: null, payerName: null, payerId: null };
+  }
+
+  const payerName =
+    [clean(payer.name?.givenName ?? payer.name?.given_name, 80), clean(payer.name?.surname, 80)]
+      .filter(Boolean)
+      .join(" ")
+      .trim() || null;
+
+  return {
+    payerEmail: clean(payer.emailAddress ?? payer.email_address, 180),
+    payerName,
+    payerId: clean(payer.payerId ?? payer.payer_id, 120),
+  };
+}
 
 export async function POST(request: Request) {
   const { context, response } = await applyRouteSecurity(request, {
@@ -86,8 +123,34 @@ export async function POST(request: Request) {
     );
 
     const parsed = res as {
-      result?: { status?: string };
-      body?: { status?: string };
+      result?: {
+        status?: string;
+        payer?: {
+          emailAddress?: string;
+          email_address?: string;
+          payerId?: string;
+          payer_id?: string;
+          name?: {
+            givenName?: string;
+            given_name?: string;
+            surname?: string;
+          };
+        };
+      };
+      body?: {
+        status?: string;
+        payer?: {
+          emailAddress?: string;
+          email_address?: string;
+          payerId?: string;
+          payer_id?: string;
+          name?: {
+            givenName?: string;
+            given_name?: string;
+            surname?: string;
+          };
+        };
+      };
       status?: string;
     };
     const status = parsed.result?.status ?? parsed.body?.status ?? parsed.status ?? null;
@@ -103,6 +166,18 @@ export async function POST(request: Request) {
       provider: "paypal",
       paymentId: paypalOrderId.value,
       orderId: orderId.value,
+    });
+
+    const payerInfo = pickPayerInfo(parsed.result ?? parsed.body ?? {});
+    await confirmPaymentEvent({
+      provider: "paypal",
+      eventId: `capture:${orderId.value}:${paypalOrderId.value}`,
+      paymentId: paypalOrderId.value,
+      status: "paid",
+      orderId: orderId.value,
+      metadata: { source: "capture-order", paypalOrderId: paypalOrderId.value, paymentStatus: status },
+      providerStatus: status,
+      ...payerInfo,
     });
 
     return ok({ status: "captured", orderId: orderId.value, paypalOrderId: paypalOrderId.value }, {

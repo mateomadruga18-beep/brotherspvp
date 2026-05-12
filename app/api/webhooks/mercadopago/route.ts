@@ -25,6 +25,12 @@ type MercadoPagoPaymentResponse = {
   id?: number;
   status?: string;
   external_reference?: string;
+  payer?: {
+    id?: string | number;
+    email?: string;
+    first_name?: string;
+    last_name?: string;
+  };
 };
 
 function mapMpStatus(status?: string) {
@@ -33,6 +39,31 @@ function mapMpStatus(status?: string) {
     return "failed" as const;
   }
   return "pending" as const;
+}
+
+function clean(value: unknown, maxLength = 180) {
+  return typeof value === "string"
+    ? value.normalize("NFKC").replace(/[\u0000-\u001F\u007F]/g, "").trim().slice(0, maxLength)
+    : value == null
+      ? null
+      : String(value).normalize("NFKC").replace(/[\u0000-\u001F\u007F]/g, "").trim().slice(0, maxLength);
+}
+
+function pickPayerInfo(payment: MercadoPagoPaymentResponse) {
+  const payer = payment.payer;
+  if (!payer) {
+    return { payerEmail: null, payerName: null, payerId: null };
+  }
+
+  const payerName =
+    [clean(payer.first_name, 80), clean(payer.last_name, 80)].filter(Boolean).join(" ").trim()
+    || null;
+
+  return {
+    payerEmail: clean(payer.email, 180),
+    payerName,
+    payerId: clean(payer.id, 120),
+  };
 }
 
 export async function POST(request: Request) {
@@ -142,6 +173,8 @@ export async function POST(request: Request) {
       status: mapMpStatus(payment.status),
       orderId: payment.external_reference ?? null,
       metadata: { paymentStatus: payment.status },
+      providerStatus: payment.status ?? null,
+      ...pickPayerInfo(payment),
       rawPayload: body.value,
     });
 

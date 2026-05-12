@@ -75,6 +75,16 @@ export type Order = {
   status: OrderStatus;
   subtotalUsd: number;
   totalUsd: number;
+  payerEmail?: string | null;
+  payerName?: string | null;
+  payerId?: string | null;
+  providerStatus?: string | null;
+  clientIp?: string | null;
+  clientIpHash?: string | null;
+  userAgent?: string | null;
+  checkoutRequestId?: string | null;
+  paidAt?: number | null;
+  failedAt?: number | null;
   createdAt: number;
   updatedAt: number;
 };

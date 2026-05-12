@@ -23,10 +23,13 @@ coverage
 # production
 /build
 dist
+target
+*/target
 
 # misc
 .DS_Store
 *.pem
+.idea/
 .idea/vcs.xml
 
 # debug

@@ -1,0 +1,17 @@
+# URL publica de la tienda en Vercel.
+store-url: "https://brotherspvp.vercel.app"
+
+# Debe ser igual a DELIVERY_AGENT_TOKEN en Vercel.
+agent-token: "replace_with_delivery_agent_token"
+
+# Identificador visible en logs del panel/DB.
+agent-id: "paper-main"
+
+# Cada cuantos segundos consulta entregas pendientes.
+poll-seconds: 5
+
+# Cantidad maxima de comandos por consulta.
+max-tasks-per-poll: 10
+
+# Timeout de requests HTTP.
+request-timeout-seconds: 10

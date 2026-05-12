@@ -38,6 +38,41 @@ function mapPayPalOrderStatus(status?: string) {
   return "pending" as const;
 }
 
+function clean(value: unknown, maxLength = 180) {
+  return typeof value === "string"
+    ? value.normalize("NFKC").replace(/[\u0000-\u001F\u007F]/g, "").trim().slice(0, maxLength)
+    : null;
+}
+
+function pickPayerInfo(orderResult: {
+  payer?: {
+    emailAddress?: string;
+    email_address?: string;
+    payerId?: string;
+    payer_id?: string;
+    name?: {
+      givenName?: string;
+      given_name?: string;
+      surname?: string;
+    };
+  };
+}) {
+  const payer = orderResult.payer;
+  if (!payer) {
+    return { payerEmail: null, payerName: null, payerId: null };
+  }
+
+  const givenName = clean(payer.name?.givenName ?? payer.name?.given_name, 80);
+  const surname = clean(payer.name?.surname, 80);
+  const payerName = [givenName, surname].filter(Boolean).join(" ").trim() || null;
+
+  return {
+    payerEmail: clean(payer.emailAddress ?? payer.email_address, 180),
+    payerName,
+    payerId: clean(payer.payerId ?? payer.payer_id, 120),
+  };
+}
+
 export async function POST(request: Request) {
   const { context, response } = await applyRouteSecurity(request, {
     rateLimits: [
@@ -130,11 +165,33 @@ export async function POST(request: Request) {
       result?: {
         purchaseUnits?: Array<{ customId?: string }>;
         purchase_units?: Array<{ custom_id?: string }>;
+        payer?: {
+          emailAddress?: string;
+          email_address?: string;
+          payerId?: string;
+          payer_id?: string;
+          name?: {
+            givenName?: string;
+            given_name?: string;
+            surname?: string;
+          };
+        };
         status?: string;
       };
       body?: {
         purchaseUnits?: Array<{ customId?: string }>;
         purchase_units?: Array<{ custom_id?: string }>;
+        payer?: {
+          emailAddress?: string;
+          email_address?: string;
+          payerId?: string;
+          payer_id?: string;
+          name?: {
+            givenName?: string;
+            given_name?: string;
+            surname?: string;
+          };
+        };
         status?: string;
       };
     };
@@ -155,6 +212,7 @@ export async function POST(request: Request) {
       ?? "",
     ).trim() || null;
     const paymentStatus = String(orderResult.status ?? "");
+    const payerInfo = pickPayerInfo(orderResult);
 
     const confirmed = await confirmPaymentEvent({
       provider: "paypal",
@@ -163,6 +221,8 @@ export async function POST(request: Request) {
       status: mapPayPalOrderStatus(paymentStatus),
       orderId: orderIdFromCustom,
       metadata: { eventType, paypalOrderId: paypalOrderId.value, paymentStatus },
+      providerStatus: paymentStatus,
+      ...payerInfo,
       rawPayload: body.value,
     });
 

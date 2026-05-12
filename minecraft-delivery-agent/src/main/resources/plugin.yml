@@ -1,0 +1,15 @@
+name: BrothersPvPDeliveryAgent
+version: 1.0.0
+main: net.brotherspvp.delivery.BrothersPvPDeliveryAgentPlugin
+api-version: '1.21'
+author: BrothersPvP
+description: Pulls paid store delivery tasks from the BrothersPvP web store.
+commands:
+  storeagent:
+    description: Manage the store delivery agent.
+    usage: /storeagent <reload|poll|status>
+    permission: brotherspvp.delivery.admin
+permissions:
+  brotherspvp.delivery.admin:
+    description: Allows managing the delivery agent.
+    default: op

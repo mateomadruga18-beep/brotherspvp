@@ -13,6 +13,12 @@ export async function createOrder(params: {
   username: string;
   items: CartItem[];
   paymentMethod: PaymentMethod;
+  evidence?: {
+    clientIp?: string | null;
+    clientIpHash?: string | null;
+    userAgent?: string | null;
+    checkoutRequestId?: string | null;
+  };
 }) {
   const totals = computeTotalsUsd(params.items);
   if (!totals.ok) return totals;
@@ -37,6 +43,10 @@ export async function createOrder(params: {
     paymentMethod: params.paymentMethod,
     totalUsd: totals.totalUsd,
     items: params.items,
+    clientIp: params.evidence?.clientIp,
+    clientIpHash: params.evidence?.clientIpHash,
+    userAgent: params.evidence?.userAgent,
+    checkoutRequestId: params.evidence?.checkoutRequestId,
   });
   return { ok: true as const, order };
 }
@@ -46,6 +56,10 @@ export async function markOrderPaid(params: {
   provider: "paypal" | "mercadopago";
   paymentId?: string;
   metadata?: Record<string, unknown>;
+  payerEmail?: string | null;
+  payerName?: string | null;
+  payerId?: string | null;
+  providerStatus?: string | null;
 }) {
   return updateOrderStatus({
     orderId: params.orderId,
@@ -53,6 +67,10 @@ export async function markOrderPaid(params: {
     provider: params.provider,
     paymentId: params.paymentId,
     metadata: params.metadata,
+    payerEmail: params.payerEmail,
+    payerName: params.payerName,
+    payerId: params.payerId,
+    providerStatus: params.providerStatus,
   });
 }
 
@@ -61,6 +79,10 @@ export async function markOrderFailed(params: {
   provider: "paypal" | "mercadopago";
   paymentId?: string;
   metadata?: Record<string, unknown>;
+  payerEmail?: string | null;
+  payerName?: string | null;
+  payerId?: string | null;
+  providerStatus?: string | null;
 }) {
   return updateOrderStatus({
     orderId: params.orderId,
@@ -68,6 +90,10 @@ export async function markOrderFailed(params: {
     provider: params.provider,
     paymentId: params.paymentId,
     metadata: params.metadata,
+    payerEmail: params.payerEmail,
+    payerName: params.payerName,
+    payerId: params.payerId,
+    providerStatus: params.providerStatus,
   });
 }
 

@@ -37,6 +37,10 @@ export async function confirmPaymentEvent(params: {
   orderId?: string | null;
   metadata?: Record<string, unknown>;
   rawPayload?: unknown;
+  payerEmail?: string | null;
+  payerName?: string | null;
+  payerId?: string | null;
+  providerStatus?: string | null;
 }) {
   const markResult = await markEventProcessed({
     provider: params.provider,
@@ -80,12 +84,20 @@ export async function confirmPaymentEvent(params: {
           provider: params.provider,
           paymentId: params.paymentId,
           metadata: params.metadata,
+          payerEmail: params.payerEmail,
+          payerName: params.payerName,
+          payerId: params.payerId,
+          providerStatus: params.providerStatus,
         })
       : await markOrderFailed({
           orderId: resolvedOrderId,
           provider: params.provider,
           paymentId: params.paymentId,
           metadata: params.metadata,
+          payerEmail: params.payerEmail,
+          payerName: params.payerName,
+          payerId: params.payerId,
+          providerStatus: params.providerStatus,
         });
 
   if (!updated) {

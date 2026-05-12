@@ -1,5 +1,6 @@
 import type { Order } from "../../lib/storeTypes";
 import { getProductById } from "../../lib/catalog";
+import { env } from "../env";
 import { validateMinecraftUsername } from "../utils/validation";
 import { sendRconCommand } from "./rconClient";
 import {
@@ -86,6 +87,7 @@ function delayForAttempt(attempt: number) {
 }
 
 function scheduleRetryWorker() {
+  if (!shouldRunRconWorker()) return;
   if (retryTimer) clearTimeout(retryTimer);
   void (async () => {
     const next = await getNextPendingTask();
@@ -95,6 +97,10 @@ function scheduleRetryWorker() {
       void processQueue();
     }, waitMs);
   })();
+}
+
+function shouldRunRconWorker() {
+  return env.DELIVERY_MODE === "rcon";
 }
 
 async function processTask(task: DeliveryTaskRecord) {
@@ -159,6 +165,11 @@ async function processTask(task: DeliveryTaskRecord) {
 }
 
 export async function processQueue() {
+  if (!shouldRunRconWorker()) {
+    log("info", "RCON delivery worker disabled", { deliveryMode: env.DELIVERY_MODE });
+    return;
+  }
+
   if (running) return;
   running = true;
   try {
@@ -256,7 +267,15 @@ export async function enqueueOrderDelivery(order: Order) {
     });
   }
 
-  void processQueue();
+  if (shouldRunRconWorker()) {
+    void processQueue();
+  } else {
+    log("info", "Delivery tasks queued for external agent", {
+      orderId: order.id,
+      deliveryMode: env.DELIVERY_MODE,
+      taskCount: deliveryCommands.length,
+    });
+  }
 }
 
 export async function getOrderDeliveryTasks(orderId: string) {
@@ -264,6 +283,7 @@ export async function getOrderDeliveryTasks(orderId: string) {
 }
 
 export function ensureQueueBootstrapped() {
+  if (!shouldRunRconWorker()) return;
   if (bootstrapped) return;
   bootstrapped = true;
   log("info", "Starting delivery queue recovery", {});

@@ -203,6 +203,12 @@ export async function POST(request: Request) {
       username: username.value,
       items: validatedItems.value,
       paymentMethod: "mercadopago",
+      evidence: {
+        clientIp: context.ip,
+        clientIpHash: context.ipHash,
+        userAgent: context.userAgent,
+        checkoutRequestId: context.requestId,
+      },
     });
     if (!created.ok) {
       return badRequest("INVALID_ITEMS", created.reason, {

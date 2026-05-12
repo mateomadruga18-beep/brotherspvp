@@ -3,6 +3,7 @@ import { isIP } from "node:net";
 
 type NodeEnv = "development" | "production" | "test";
 type PayPalEnvironment = "sandbox" | "live";
+type DeliveryMode = "agent" | "rcon" | "disabled";
 
 type StoreEnv = {
   NODE_ENV: NodeEnv;
@@ -16,6 +17,10 @@ type StoreEnv = {
   MERCADOPAGO_ACCESS_TOKEN?: string;
   MERCADOPAGO_WEBHOOK_SECRET?: string;
   MERCADOPAGO_PUBLIC_KEY?: string;
+  ADMIN_PASSWORD?: string;
+  ADMIN_SESSION_SECRET?: string;
+  DELIVERY_MODE: DeliveryMode;
+  DELIVERY_AGENT_TOKEN?: string;
   RCON_HOST?: string;
   RCON_PORT?: string;
   RCON_PASSWORD?: string;
@@ -180,6 +185,10 @@ const publicBaseUrl = normalizeOrigin(
   blockingErrors,
 );
 const paypalEnvironment = (process.env.PAYPAL_ENVIRONMENT ?? "sandbox").trim().toLowerCase();
+const deliveryMode = (
+  process.env.DELIVERY_MODE
+  ?? (process.env.DELIVERY_AGENT_TOKEN?.trim() ? "agent" : "rcon")
+).trim().toLowerCase();
 const forceProductionValidation = parseBooleanFlag(process.env.FORCE_PRODUCTION_VALIDATION);
 const isVercelProduction = (process.env.VERCEL_ENV ?? "").trim().toLowerCase() === "production";
 const hasPublicBaseUrl = isPublicDeploymentOrigin(baseUrl) || isPublicDeploymentOrigin(publicBaseUrl);
@@ -199,9 +208,29 @@ if (paypalEnvironment !== "sandbox" && paypalEnvironment !== "live") {
   blockingErrors.push("PAYPAL_ENVIRONMENT must be either 'sandbox' or 'live'.");
 }
 
+if (deliveryMode !== "agent" && deliveryMode !== "rcon" && deliveryMode !== "disabled") {
+  blockingErrors.push("DELIVERY_MODE must be 'agent', 'rcon', or 'disabled'.");
+}
+
 const databaseUrl = process.env.DATABASE_URL?.trim();
 if (!databaseUrl) {
   blockingErrors.push("DATABASE_URL is required.");
+}
+
+const adminPassword = process.env.ADMIN_PASSWORD?.trim();
+const adminSessionSecret = process.env.ADMIN_SESSION_SECRET?.trim();
+const deliveryAgentToken = process.env.DELIVERY_AGENT_TOKEN?.trim();
+
+if (adminPassword && adminPassword.length < 16) {
+  blockingErrors.push("ADMIN_PASSWORD must be at least 16 characters long.");
+}
+
+if (adminSessionSecret && adminSessionSecret.length < 32) {
+  blockingErrors.push("ADMIN_SESSION_SECRET must be at least 32 characters long.");
+}
+
+if (deliveryAgentToken && deliveryAgentToken.length < 32) {
+  blockingErrors.push("DELIVERY_AGENT_TOKEN must be at least 32 characters long.");
 }
 
 const warnedOptionalConfig = [
@@ -225,6 +254,18 @@ if (rconPort && !/^\d+$/.test(rconPort)) {
 const trustedOrigins = parseTrustedOrigins(blockingErrors);
 if (trustedOrigins.length === 0 && enforceProductionValidation) {
   productionMissingConfig.push("At least one trusted origin is required in production.");
+}
+
+if (enforceProductionValidation) {
+  if (!adminPassword) {
+    productionMissingConfig.push("ADMIN_PASSWORD is required for the admin panel in production.");
+  }
+  if (!adminSessionSecret) {
+    productionMissingConfig.push("ADMIN_SESSION_SECRET is required for signed admin sessions in production.");
+  }
+  if (deliveryMode === "agent" && !deliveryAgentToken) {
+    productionMissingConfig.push("DELIVERY_AGENT_TOKEN is required when DELIVERY_MODE=agent.");
+  }
 }
 
 if (!isNextProductionBuildPhase && !enforceProductionValidation) {
@@ -255,6 +296,10 @@ export const env: StoreEnv = {
   MERCADOPAGO_ACCESS_TOKEN: process.env.MERCADOPAGO_ACCESS_TOKEN?.trim(),
   MERCADOPAGO_WEBHOOK_SECRET: process.env.MERCADOPAGO_WEBHOOK_SECRET?.trim(),
   MERCADOPAGO_PUBLIC_KEY: process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY?.trim(),
+  ADMIN_PASSWORD: adminPassword,
+  ADMIN_SESSION_SECRET: adminSessionSecret,
+  DELIVERY_MODE: deliveryMode as DeliveryMode,
+  DELIVERY_AGENT_TOKEN: deliveryAgentToken,
   RCON_HOST: process.env.RCON_HOST?.trim(),
   RCON_PORT: rconPort,
   RCON_PASSWORD: process.env.RCON_PASSWORD?.trim(),

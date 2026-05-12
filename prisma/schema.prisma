@@ -33,11 +33,26 @@ model Order {
   total                 Decimal                @db.Decimal(10, 2)
   currency              String                 @default("USD")
   items                 Json
+  payerEmail            String?
+  payerName             String?
+  payerId               String?
+  providerStatus        String?
+  clientIp              String?
+  clientIpHash          String?
+  userAgent             String?
+  checkoutRequestId     String?
+  paidAt                DateTime?
+  failedAt              DateTime?
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
   paymentReferences     PaymentReference[]
   deliveryTasks         DeliveryTask[]
   paymentStatusHistory  PaymentStatusHistory[]
+
+  @@index([status, createdAt])
+  @@index([gateway, createdAt])
+  @@index([payerEmail])
+  @@index([username])
 }
 
 model WebhookEvent {

@@ -9,6 +9,16 @@ function toAppOrder(row: {
   status: OrderStatus;
   total: Prisma.Decimal;
   items: Prisma.JsonValue;
+  payerEmail: string | null;
+  payerName: string | null;
+  payerId: string | null;
+  providerStatus: string | null;
+  clientIp: string | null;
+  clientIpHash: string | null;
+  userAgent: string | null;
+  checkoutRequestId: string | null;
+  paidAt: Date | null;
+  failedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }): Order {
@@ -20,6 +30,16 @@ function toAppOrder(row: {
     subtotalUsd: Number(row.total),
     totalUsd: Number(row.total),
     items: (row.items as CartItem[]) ?? [],
+    payerEmail: row.payerEmail,
+    payerName: row.payerName,
+    payerId: row.payerId,
+    providerStatus: row.providerStatus,
+    clientIp: row.clientIp,
+    clientIpHash: row.clientIpHash,
+    userAgent: row.userAgent,
+    checkoutRequestId: row.checkoutRequestId,
+    paidAt: row.paidAt?.getTime() ?? null,
+    failedAt: row.failedAt?.getTime() ?? null,
     createdAt: row.createdAt.getTime(),
     updatedAt: row.updatedAt.getTime(),
   };
@@ -35,6 +55,10 @@ export async function createOrderRecord(params: {
   gateway: PaymentProvider;
   totalUsd: number;
   items: CartItem[];
+  clientIp?: string | null;
+  clientIpHash?: string | null;
+  userAgent?: string | null;
+  checkoutRequestId?: string | null;
 }) {
   const row = await prisma.order.create({
     data: {
@@ -45,6 +69,10 @@ export async function createOrderRecord(params: {
       total: new Prisma.Decimal(params.totalUsd.toFixed(2)),
       currency: "USD",
       items: params.items as unknown as Prisma.JsonArray,
+      clientIp: params.clientIp,
+      clientIpHash: params.clientIpHash,
+      userAgent: params.userAgent,
+      checkoutRequestId: params.checkoutRequestId,
     },
   });
   log("created", { orderId: row.id, gateway: row.gateway, total: Number(row.total) });
@@ -63,11 +91,29 @@ export async function updateOrderStatusRecord(params: {
   provider: PaymentProvider;
   paymentId?: string;
   metadata?: Record<string, unknown>;
+  payerEmail?: string | null;
+  payerName?: string | null;
+  payerId?: string | null;
+  providerStatus?: string | null;
 }) {
+  const statusTimestamp =
+    params.status === OrderStatus.paid
+      ? { paidAt: new Date(), failedAt: null }
+      : params.status === OrderStatus.failed
+        ? { failedAt: new Date() }
+        : {};
+
   const result = await prisma.$transaction(async (tx) => {
     const order = await tx.order.update({
       where: { id: params.orderId },
-      data: { status: params.status },
+      data: {
+        status: params.status,
+        payerEmail: params.payerEmail,
+        payerName: params.payerName,
+        payerId: params.payerId,
+        providerStatus: params.providerStatus,
+        ...statusTimestamp,
+      },
     });
     await tx.paymentStatusHistory.create({
       data: {

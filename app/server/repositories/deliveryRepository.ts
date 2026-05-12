@@ -98,11 +98,71 @@ export async function getDuePendingTasks(limit = 50) {
   return rows.map(toRecord);
 }
 
+export async function claimDuePendingTasksForAgent(params: {
+  limit?: number;
+  leaseMs?: number;
+  agentId?: string;
+}) {
+  const now = new Date();
+  const leaseUntil = new Date(Date.now() + (params.leaseMs ?? 120_000));
+  const limit = Math.max(1, Math.min(params.limit ?? 25, 100));
+  const agentId = params.agentId?.trim().slice(0, 80) || "minecraft-plugin";
+
+  const rows = await prisma.$transaction(async (tx) => {
+    const candidates = await tx.deliveryTask.findMany({
+      where: {
+        status: DeliveryTaskStatus.pending,
+        nextAttemptAt: { lte: now },
+      },
+      orderBy: { createdAt: "asc" },
+      take: limit,
+    });
+
+    const claimed = [];
+    for (const task of candidates) {
+      const result = await tx.deliveryTask.updateMany({
+        where: {
+          id: task.id,
+          status: DeliveryTaskStatus.pending,
+          nextAttemptAt: { lte: now },
+        },
+        data: {
+          nextAttemptAt: leaseUntil,
+        },
+      });
+
+      if (result.count !== 1) continue;
+
+      await tx.deliveryLog.create({
+        data: {
+          taskId: task.id,
+          message: `agent_claimed:${agentId}:lease_until:${leaseUntil.toISOString()}`,
+        },
+      });
+
+      claimed.push({
+        ...task,
+        nextAttemptAt: leaseUntil,
+      });
+    }
+
+    return claimed;
+  });
+
+  log("agent-claimed", { count: rows.length, agentId });
+  return rows.map(toRecord);
+}
+
 export async function getNextPendingTask() {
   const row = await prisma.deliveryTask.findFirst({
     where: { status: DeliveryTaskStatus.pending },
     orderBy: { nextAttemptAt: "asc" },
   });
+  return row ? toRecord(row) : null;
+}
+
+export async function getDeliveryTask(taskId: string) {
+  const row = await prisma.deliveryTask.findUnique({ where: { id: taskId } });
   return row ? toRecord(row) : null;
 }
 
@@ -170,6 +230,34 @@ export async function markTaskFailedFinal(params: {
   });
   log("task-failed", { taskId: row.id, retryCount: row.retryCount });
   return toRecord(row);
+}
+
+export async function markAgentTaskFailed(params: {
+  taskId: string;
+  error: string;
+  retryDelayMs?: number;
+  maxAttempts?: number;
+}) {
+  const existing = await prisma.deliveryTask.findUnique({ where: { id: params.taskId } });
+  if (!existing) return null;
+  if (existing.status === DeliveryTaskStatus.delivered) return toRecord(existing);
+
+  const retryCount = existing.retryCount + 1;
+  const maxAttempts = Math.max(1, params.maxAttempts ?? 5);
+  if (retryCount >= maxAttempts) {
+    return markTaskFailedFinal({
+      taskId: params.taskId,
+      retryCount,
+      error: params.error,
+    });
+  }
+
+  return markTaskFailedForRetry({
+    taskId: params.taskId,
+    retryCount,
+    nextAttemptAt: new Date(Date.now() + (params.retryDelayMs ?? 30_000)),
+    error: params.error,
+  });
 }
 
 export async function getTasksForOrder(orderId: string) {
