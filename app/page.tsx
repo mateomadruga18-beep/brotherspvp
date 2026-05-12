@@ -186,6 +186,9 @@ export default async function Home() {
                   <Link className="mc-button w-full sm:w-auto" href="/exclusivos">
                     Ver exclusivos
                   </Link>
+                  <Link className="mc-button mc-button-secondary w-full sm:w-auto" href="/gkits">
+                    Ver GKits
+                  </Link>
                   <Link className="mc-button mc-button-secondary w-full sm:w-auto" href="/ranks">
                     Ver rangos
                   </Link>
@@ -273,6 +276,9 @@ export default async function Home() {
             </Link>
             <Link className="transition hover:text-white" href="/exclusivos">
               Exclusivos
+            </Link>
+            <Link className="transition hover:text-white" href="/gkits">
+              GKits
             </Link>
             <Link className="transition hover:text-white" href="/cart">
               Carrito

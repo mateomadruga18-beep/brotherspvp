@@ -11,6 +11,7 @@ const links = [
   { href: "/ranks", label: "Rangos" },
   { href: "/crates", label: "Llaves" },
   { href: "/exclusivos", label: "Exclusivos" },
+  { href: "/gkits", label: "GKits" },
 ];
 
 export function StoreNavbar() {

@@ -1,4 +1,4 @@
-export type ProductCategory = "rank" | "crate" | "exclusive";
+export type ProductCategory = "rank" | "crate" | "exclusive" | "gkit";
 
 export type ProductStat = {
   label: string;
@@ -21,7 +21,9 @@ export type ProductVisualKind =
   | "booster"
   | "xp"
   | "money"
-  | "cosmetics";
+  | "cosmetics"
+  | "pet-slot"
+  | "gkit";
 
 export type ProductVisual = {
   kind: ProductVisualKind;

@@ -56,10 +56,12 @@ function validateDeliveryCommand(command: string) {
     new RegExp(`^lp user ${usernamePattern} permission set ultracosmetics\\.allcosmetics$`, "i"),
     new RegExp(`^crate give p Brothers 7 ${usernamePattern}$`, "i"),
     new RegExp(`^kit give bundle5 ${usernamePattern}$`, "i"),
+    new RegExp(`^kit give reaper ${usernamePattern}$`, "i"),
     new RegExp(`^lootbox give ${usernamePattern} Premium 24$`, "i"),
     new RegExp(`^armadura give ${usernamePattern} boosteritem 1$`, "i"),
     new RegExp(`^azada add ${usernamePattern} 500000$`, "i"),
     new RegExp(`^Multiplier set Permanent 20\\.0 ${usernamePattern}$`, "i"),
+    new RegExp(`^pet slotgive ${usernamePattern} (?:3|4|5)$`, "i"),
     new RegExp(
       `^bc &A&lSHOP &7\\| &e&L${INVERTED_EXCLAMATION}El jugador &a&l${usernamePattern} &e&lha hecho una compra en la tienda &d&lshop\\.brotherspvp\\.net&e&l muchas gracias!$`,
       "i",

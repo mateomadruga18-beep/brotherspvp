@@ -7,11 +7,12 @@ export default function StorePage() {
   const ranks = getProductsByCategory("rank");
   const crates = getProductsByCategory("crate");
   const exclusives = getProductsByCategory("exclusive");
+  const gkits = getProductsByCategory("gkit");
 
   return (
     <StoreShell
       title="Tienda BrotherSPvP"
-      subtitle="Compra rangos, llaves y exclusivos con entrega automatica despues de confirmar el pago."
+      subtitle="Compra rangos, llaves, exclusivos y GKits con entrega automatica despues de confirmar el pago."
       right={
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:justify-end">
           <Link className="mc-button mc-button-ghost h-10 px-4 text-sm" href="/cart">
@@ -19,6 +20,9 @@ export default function StorePage() {
           </Link>
           <Link className="mc-button h-10 px-4 text-sm" href="/exclusivos">
             Exclusivos
+          </Link>
+          <Link className="mc-button mc-button-secondary h-10 px-4 text-sm" href="/gkits">
+            GKits
           </Link>
         </div>
       }
@@ -78,7 +82,7 @@ export default function StorePage() {
               <div>
                 <h2 className="section-title">Exclusivos</h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-white/65 sm:text-base">
-                  Bundles, lootboxes, booster de armadura, XP de azada y accesos especiales.
+                  Bundles, lootboxes, booster de armadura, slots de pet, XP de azada y accesos especiales.
                 </p>
               </div>
               <Link className="section-link" href="/exclusivos">
@@ -91,6 +95,30 @@ export default function StorePage() {
                   key={product.id}
                   product={product}
                   primaryCtaVariant={product.featured ? "secondary" : "primary"}
+                  motionDelay={Math.min(index, 5) * 0.035}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h2 className="section-title">GKits</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-white/65 sm:text-base">
+                  Kits premium con equipo, economia, boosts y recompensas listas para dominar el Prison.
+                </p>
+              </div>
+              <Link className="section-link" href="/gkits">
+                Ver GKits
+              </Link>
+            </div>
+            <div className="mt-6 grid gap-5 xl:grid-cols-2">
+              {gkits.map((product, index) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  primaryCtaVariant="secondary"
                   motionDelay={Math.min(index, 5) * 0.035}
                 />
               ))}
