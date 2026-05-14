@@ -2,21 +2,25 @@ import type { Product, ProductCategory } from "./storeTypes";
 
 export type { Product, ProductCategory } from "./storeTypes";
 
-const rankGroups = {
-  VIP: "vip",
-  NEMESIS: "nemesis",
-  APEX: "apex",
-  VORTEX: "vortex",
-  EON: "eon",
-  OBLIVION: "oblivion",
-  ZENITH: "zenith",
-  NYX: "nyx",
-  BROTHERS: "brothers",
-  "BROTHERS+": "brothersplus",
+const rankDeliveryConfig = {
+  VIP: { group: "vip", multiplier: "2.0" },
+  NEMESIS: { group: "nemesis", multiplier: "3.0" },
+  APEX: { group: "apex", multiplier: "4.0" },
+  VORTEX: { group: "vortex", multiplier: "5.0" },
+  EON: { group: "eon", multiplier: "6.0" },
+  OBLIVION: { group: "oblivion", multiplier: "7.0" },
+  ZENITH: { group: "zenith", multiplier: "8.0" },
+  NYX: { group: "nyx", multiplier: "9.0" },
+  BROTHERS: { group: "brothers", multiplier: "10.0" },
+  "BROTHERS+": { group: "brothersplus", multiplier: "11.0" },
 } as const;
 
-function rankDelivery(name: keyof typeof rankGroups) {
-  return [`lp user %player% group add ${rankGroups[name]}`];
+function rankDelivery(name: keyof typeof rankDeliveryConfig) {
+  const rank = rankDeliveryConfig[name];
+  return [
+    `lp user %player% group add ${rank.group}`,
+    `Multiplier set Rank ${rank.multiplier} %player%`,
+  ];
 }
 
 const rankProducts: Product[] = [
