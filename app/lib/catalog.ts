@@ -18,7 +18,7 @@ const rankDeliveryConfig = {
 function rankDelivery(name: keyof typeof rankDeliveryConfig) {
   const rank = rankDeliveryConfig[name];
   return [
-    `lp user %player% group add ${rank.group}`,
+    `lp user %player% group set ${rank.group}`,
     `Multiplier set Rank ${rank.multiplier} %player%`,
   ];
 }
