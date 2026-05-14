@@ -1,4 +1,5 @@
 import type { CartItem } from "../../../lib/storeTypes";
+import { MercadoPagoConfig, Preference } from "mercadopago";
 import { env } from "../../../server/env";
 import { registerPaymentReference } from "../../../server/services/paymentConfirmation";
 import { createOrder } from "../../../server/services/orders";
@@ -6,10 +7,8 @@ import { readJsonBody } from "../../../server/security/body";
 import { hashIdentifier } from "../../../server/security/request";
 import { enforceRateLimit } from "../../../server/security/rateLimit";
 import { applyRouteSecurity } from "../../../server/security/routeSecurity";
-import { fetchWithTimeout, TimeoutError } from "../../../server/security/timeout";
 import {
   badRequest,
-  gatewayTimeout,
   handleRouteError,
   ok,
   serverError,
@@ -259,68 +258,50 @@ export async function POST(request: Request) {
       });
     }
 
-    const mpRes = await fetchWithTimeout(
-      "https://api.mercadopago.com/checkout/preferences",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${env.MERCADOPAGO_ACCESS_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          items: [
-            {
-              title: productName,
-              quantity: 1,
-              currency_id: pricing.currencyId,
-              unit_price: amount,
-            },
-          ],
-          external_reference: externalReference,
-          back_urls: {
-            success: successUrl.value,
-            failure: failureUrl.value,
-            pending: pendingUrl.value,
+    const client = new MercadoPagoConfig({
+      accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!,
+    });
+    const preferenceClient = new Preference(client);
+    const preference = await preferenceClient.create({
+      body: {
+        items: [
+          {
+            id: externalReference,
+            title: productName,
+            quantity: 1,
+            currency_id: pricing.currencyId,
+            unit_price: amount,
           },
-          auto_return: "approved",
-        }),
+        ],
+        external_reference: externalReference,
+        back_urls: {
+          success: successUrl.value,
+          failure: failureUrl.value,
+          pending: pendingUrl.value,
+        },
+        auto_return: "approved",
       },
-      10_000,
-    );
+    });
 
-    if (!mpRes.ok) {
-      const mpErr = await mpRes.text();
-      return serverError("MERCADOPAGO_CREATE_FAILED", mpErr || "Failed to create preference.", {
-        request,
-        requestId: context.requestId,
-      });
-    }
-
-    const payload = (await mpRes.json()) as {
-      id?: string;
-      init_point?: string;
-      sandbox_init_point?: string;
-    };
-
-    const checkoutUrl = payload.init_point ?? payload.sandbox_init_point ?? null;
-    if (!checkoutUrl || !payload.id) {
+    const initPointUrl = preference.init_point?.trim() ?? "";
+    if (!initPointUrl || !preference.id) {
       return serverError(
         "MERCADOPAGO_INVALID_RESPONSE",
-        "Mercado Pago did not return a valid checkout URL.",
+        "Mercado Pago did not return a production init_point.",
         { request, requestId: context.requestId },
       );
     }
 
     await registerPaymentReference({
       provider: "mercadopago",
-      paymentId: payload.id,
+      paymentId: preference.id,
       orderId: created.order.id,
     });
 
     return ok(
       {
-        preferenceId: payload.id,
-        checkoutUrl,
+        preferenceId: preference.id,
+        url: initPointUrl,
         orderId: created.order.id,
         currencyId: pricing.currencyId,
         amount,
@@ -331,14 +312,6 @@ export async function POST(request: Request) {
       },
     );
   } catch (error) {
-    if (error instanceof TimeoutError) {
-      return gatewayTimeout(
-        "MERCADOPAGO_CREATE_TIMEOUT",
-        "Mercado Pago took too long to respond.",
-        { request, requestId: context.requestId },
-      );
-    }
-
     return handleRouteError(error, {
       request,
       requestId: context.requestId,

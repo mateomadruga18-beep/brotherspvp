@@ -45,7 +45,7 @@ export function MercadoPagoCheckoutButton({
     setLoading(true);
 
     try {
-      const created = await apiPost<{ checkoutUrl: string; preferenceId: string }>(
+      const created = await apiPost<{ url: string; preferenceId: string }>(
         "/api/mercadopago/create-preference",
         {
           productName,
@@ -60,7 +60,7 @@ export function MercadoPagoCheckoutButton({
         return;
       }
 
-      window.location.href = created.data.checkoutUrl;
+      window.location.href = created.data.url;
     } finally {
       setLoading(false);
     }

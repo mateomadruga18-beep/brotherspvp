@@ -16,6 +16,7 @@ type StoreEnv = {
   PAYPAL_WEBHOOK_SECRET?: string;
   MERCADOPAGO_ACCESS_TOKEN?: string;
   MERCADOPAGO_WEBHOOK_SECRET?: string;
+  MERCADOPAGO_PUBLIC_KEY?: string;
   ADMIN_PASSWORD?: string;
   ADMIN_SESSION_SECRET?: string;
   DELIVERY_MODE: DeliveryMode;
@@ -35,6 +36,10 @@ function parseNodeEnv(value: string | undefined): NodeEnv {
 
 function parseBooleanFlag(value: string | undefined) {
   return /^(1|true|yes|on)$/i.test(value?.trim() ?? "");
+}
+
+function isMercadoPagoProductionCredential(value: string | undefined) {
+  return Boolean(value?.trim().startsWith("APP_USR-"));
 }
 
 function isPrivateIpv4(hostname: string) {
@@ -219,6 +224,8 @@ if (!databaseUrl) {
 const adminPassword = process.env.ADMIN_PASSWORD?.trim();
 const adminSessionSecret = process.env.ADMIN_SESSION_SECRET?.trim();
 const deliveryAgentToken = process.env.DELIVERY_AGENT_TOKEN?.trim();
+const mercadopagoAccessToken = process.env.MERCADOPAGO_ACCESS_TOKEN?.trim();
+const mercadopagoPublicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY?.trim();
 
 if (adminPassword && adminPassword.length < 16) {
   blockingErrors.push("ADMIN_PASSWORD must be at least 16 characters long.");
@@ -230,6 +237,14 @@ if (adminSessionSecret && adminSessionSecret.length < 32) {
 
 if (deliveryAgentToken && deliveryAgentToken.length < 32) {
   blockingErrors.push("DELIVERY_AGENT_TOKEN must be at least 32 characters long.");
+}
+
+if (mercadopagoAccessToken && !isMercadoPagoProductionCredential(mercadopagoAccessToken)) {
+  blockingErrors.push("MERCADOPAGO_ACCESS_TOKEN must be a production APP_USR credential, not TEST or sandbox.");
+}
+
+if (mercadopagoPublicKey && !isMercadoPagoProductionCredential(mercadopagoPublicKey)) {
+  blockingErrors.push("NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY must be a production APP_USR credential, not TEST or sandbox.");
 }
 
 const warnedOptionalConfig = [
@@ -262,6 +277,12 @@ if (enforceProductionValidation) {
   if (!adminSessionSecret) {
     productionMissingConfig.push("ADMIN_SESSION_SECRET is required for signed admin sessions in production.");
   }
+  if (!mercadopagoAccessToken) {
+    productionMissingConfig.push("MERCADOPAGO_ACCESS_TOKEN is required for Mercado Pago in production.");
+  }
+  if (!mercadopagoPublicKey) {
+    productionMissingConfig.push("NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY is required for Mercado Pago in production.");
+  }
   if (deliveryMode === "agent" && !deliveryAgentToken) {
     productionMissingConfig.push("DELIVERY_AGENT_TOKEN is required when DELIVERY_MODE=agent.");
   }
@@ -292,8 +313,9 @@ export const env: StoreEnv = {
   PAYPAL_CLIENT_ID: process.env.PAYPAL_CLIENT_ID?.trim(),
   PAYPAL_CLIENT_SECRET: process.env.PAYPAL_CLIENT_SECRET?.trim(),
   PAYPAL_WEBHOOK_SECRET: process.env.PAYPAL_WEBHOOK_SECRET?.trim(),
-  MERCADOPAGO_ACCESS_TOKEN: process.env.MERCADOPAGO_ACCESS_TOKEN?.trim(),
+  MERCADOPAGO_ACCESS_TOKEN: mercadopagoAccessToken,
   MERCADOPAGO_WEBHOOK_SECRET: process.env.MERCADOPAGO_WEBHOOK_SECRET?.trim(),
+  MERCADOPAGO_PUBLIC_KEY: mercadopagoPublicKey,
   ADMIN_PASSWORD: adminPassword,
   ADMIN_SESSION_SECRET: adminSessionSecret,
   DELIVERY_MODE: deliveryMode as DeliveryMode,
