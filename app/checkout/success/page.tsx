@@ -32,7 +32,13 @@ function CheckoutSuccessContent() {
 
     const gateway = searchParams.get("gateway");
     const existing = loadCheckoutReceipt();
-    if (gateway !== "mercadopago") {
+    const isMercadoPagoReturn =
+      gateway === "mercadopago" ||
+      searchParams.has("collection_id") ||
+      searchParams.has("payment_id") ||
+      searchParams.has("external_reference");
+
+    if (!isMercadoPagoReturn) {
       return existing;
     }
 
@@ -42,8 +48,10 @@ function CheckoutSuccessContent() {
     const totalUsd = Number.isFinite(amount) && amount > 0 ? amount : 0;
     const orderId =
       searchParams.get("external_reference") ??
+      searchParams.get("order_id") ??
       searchParams.get("merchant_order_id") ??
       searchParams.get("payment_id") ??
+      searchParams.get("collection_id") ??
       "MP-PENDING";
 
     return {
@@ -58,7 +66,13 @@ function CheckoutSuccessContent() {
 
   useEffect(() => {
     const gateway = searchParams.get("gateway");
-    if (gateway !== "mercadopago" || !receipt) {
+    const isMercadoPagoReturn =
+      gateway === "mercadopago" ||
+      searchParams.has("collection_id") ||
+      searchParams.has("payment_id") ||
+      searchParams.has("external_reference");
+
+    if (!isMercadoPagoReturn || !receipt) {
       return;
     }
 

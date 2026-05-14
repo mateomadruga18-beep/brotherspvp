@@ -16,7 +16,6 @@ type StoreEnv = {
   PAYPAL_WEBHOOK_SECRET?: string;
   MERCADOPAGO_ACCESS_TOKEN?: string;
   MERCADOPAGO_WEBHOOK_SECRET?: string;
-  MERCADOPAGO_PUBLIC_KEY?: string;
   ADMIN_PASSWORD?: string;
   ADMIN_SESSION_SECRET?: string;
   DELIVERY_MODE: DeliveryMode;
@@ -295,7 +294,6 @@ export const env: StoreEnv = {
   PAYPAL_WEBHOOK_SECRET: process.env.PAYPAL_WEBHOOK_SECRET?.trim(),
   MERCADOPAGO_ACCESS_TOKEN: process.env.MERCADOPAGO_ACCESS_TOKEN?.trim(),
   MERCADOPAGO_WEBHOOK_SECRET: process.env.MERCADOPAGO_WEBHOOK_SECRET?.trim(),
-  MERCADOPAGO_PUBLIC_KEY: process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY?.trim(),
   ADMIN_PASSWORD: adminPassword,
   ADMIN_SESSION_SECRET: adminSessionSecret,
   DELIVERY_MODE: deliveryMode as DeliveryMode,

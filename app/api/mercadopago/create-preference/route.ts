@@ -139,10 +139,10 @@ export async function POST(request: Request) {
   if (response) return response;
 
   try {
-    if (!env.MERCADOPAGO_ACCESS_TOKEN || !env.MERCADOPAGO_PUBLIC_KEY) {
+    if (!env.MERCADOPAGO_ACCESS_TOKEN) {
       return serverError(
         "MERCADOPAGO_NOT_CONFIGURED",
-        "Mercado Pago credentials are missing.",
+        "Mercado Pago no esta configurado. Falta el access token del servidor.",
         { request, requestId: context.requestId },
       );
     }
@@ -243,9 +243,15 @@ export async function POST(request: Request) {
     const amount = pricing.amount;
     const externalReference = created.order.id;
 
-    const successUrl = buildAbsoluteUrl(baseUrl.value, "/checkout/success");
-    const failureUrl = buildAbsoluteUrl(baseUrl.value, "/checkout/failure");
-    const pendingUrl = buildAbsoluteUrl(baseUrl.value, "/checkout/pending");
+    const returnParams = new URLSearchParams({
+      gateway: "mercadopago",
+      external_reference: created.order.id,
+      username: username.value,
+      amount: created.order.totalUsd.toFixed(2),
+    });
+    const successUrl = buildAbsoluteUrl(baseUrl.value, `/checkout/success?${returnParams}`);
+    const failureUrl = buildAbsoluteUrl(baseUrl.value, `/checkout/failure?${returnParams}`);
+    const pendingUrl = buildAbsoluteUrl(baseUrl.value, `/checkout/pending?${returnParams}`);
     if (!successUrl.ok || !failureUrl.ok || !pendingUrl.ok) {
       return serverError("INVALID_BACK_URLS", "Failed to build checkout redirect URLs.", {
         request,
@@ -315,7 +321,6 @@ export async function POST(request: Request) {
       {
         preferenceId: payload.id,
         checkoutUrl,
-        publicKey: env.MERCADOPAGO_PUBLIC_KEY,
         orderId: created.order.id,
         currencyId: pricing.currencyId,
         amount,
