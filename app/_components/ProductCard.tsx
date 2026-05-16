@@ -20,6 +20,56 @@ function ProductArtwork({ product }: { product: Product }) {
   const visual = product.visual;
   const kind = visual?.kind ?? product.category;
   const imageSrc = visual?.imageSrc;
+  const upgrade = product.upgradeVisual;
+
+  if (upgrade) {
+    return (
+      <div className="product-art product-art-upgrade">
+        <div className="product-art-glow" aria-hidden="true" />
+        <div className="upgrade-art-grid">
+          <div className="upgrade-art-rank">
+            {upgrade.fromImageSrc ? (
+              <Image
+                src={upgrade.fromImageSrc}
+                alt={upgrade.fromImageAlt ?? upgrade.fromLabel}
+                width={140}
+                height={140}
+                sizes="4rem"
+                className="upgrade-art-image"
+              />
+            ) : (
+              <span className="upgrade-art-fallback">{upgrade.fromLabel.slice(0, 2)}</span>
+            )}
+            <span className="upgrade-art-label">{upgrade.fromLabel}</span>
+          </div>
+          <div className="upgrade-art-arrow" aria-hidden="true">
+            -&gt;
+          </div>
+          <div className="upgrade-art-rank">
+            {upgrade.toImageSrc ? (
+              <Image
+                src={upgrade.toImageSrc}
+                alt={upgrade.toImageAlt ?? upgrade.toLabel}
+                width={140}
+                height={140}
+                sizes="4rem"
+                className="upgrade-art-image"
+              />
+            ) : (
+              <span className="upgrade-art-fallback">{upgrade.toLabel.slice(0, 2)}</span>
+            )}
+            <span className="upgrade-art-label">{upgrade.toLabel}</span>
+          </div>
+        </div>
+        <div className="product-art-shade" aria-hidden="true" />
+        <div className="product-art-copy">
+          <div className="product-art-title">{visual?.label ?? "UPGRADE"}</div>
+          <div className="product-art-detail">{visual?.detail ?? "10% OFF"}</div>
+        </div>
+        <div className="rank-art-band" />
+      </div>
+    );
+  }
 
   return (
     <div className={`product-art product-art-${kind}`}>

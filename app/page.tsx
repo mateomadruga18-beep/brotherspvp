@@ -186,6 +186,9 @@ export default async function Home() {
                   <Link className="mc-button w-full sm:w-auto" href="/exclusivos">
                     Ver exclusivos
                   </Link>
+                  <Link className="mc-button mc-button-secondary w-full sm:w-auto" href="/upgrades">
+                    Ver upgrades
+                  </Link>
                   <Link className="mc-button mc-button-secondary w-full sm:w-auto" href="/gkits">
                     Ver GKits
                   </Link>

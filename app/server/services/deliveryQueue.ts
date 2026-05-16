@@ -53,6 +53,7 @@ function validateDeliveryCommand(command: string) {
 
   const patterns = [
     new RegExp(`^lp user ${usernamePattern} group set (vip|nemesis|apex|vortex|eon|oblivion|zenith|nyx|brothers|brothersplus)$`, "i"),
+    new RegExp(`^lp user ${usernamePattern} group remove (vip|nemesis|apex|vortex|eon|oblivion|zenith|nyx|brothers|brothersplus)$`, "i"),
     new RegExp(`^Multiplier set Rank (?:[2-9]|10|11)\\.0 ${usernamePattern}$`, "i"),
     new RegExp(`^lp user ${usernamePattern} permission set ultracosmetics\\.allcosmetics$`, "i"),
     new RegExp(`^crate give p Brothers 7 ${usernamePattern}$`, "i"),
@@ -229,7 +230,7 @@ export async function enqueueOrderDelivery(order: Order) {
       continue;
     }
 
-    const repeats = product.category === "rank" ? 1 : line.quantity;
+    const repeats = product.category === "rank" || product.category === "upgrades" ? 1 : line.quantity;
     for (let copy = 0; copy < repeats; copy += 1) {
       for (let index = 0; index < templates.length; index += 1) {
         deliveryCommands.push({

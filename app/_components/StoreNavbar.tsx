@@ -9,6 +9,7 @@ import { MotionHeader } from "./Motion";
 const links = [
   { href: "/store", label: "Tienda" },
   { href: "/ranks", label: "Rangos" },
+  { href: "/upgrades", label: "Upgrades" },
   { href: "/crates", label: "Llaves" },
   { href: "/exclusivos", label: "Exclusivos" },
   { href: "/gkits", label: "GKits" },

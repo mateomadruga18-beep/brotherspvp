@@ -15,12 +15,18 @@ const rankDeliveryConfig = {
   "BROTHERS+": { group: "brothersplus", multiplier: "11.0" },
 } as const;
 
-function rankDelivery(name: keyof typeof rankDeliveryConfig) {
+type RankName = keyof typeof rankDeliveryConfig;
+
+function rankDelivery(name: RankName) {
   const rank = rankDeliveryConfig[name];
   return [
     `lp user %player% group set ${rank.group}`,
     `Multiplier set Rank ${rank.multiplier} %player%`,
   ];
+}
+
+function roundPrice(amount: number) {
+  return Math.round((amount + Number.EPSILON) * 100) / 100;
 }
 
 const rankProducts: Product[] = [
@@ -431,6 +437,89 @@ const rankProducts: Product[] = [
   },
 ];
 
+const upgradePairs = [
+  ["VIP", "NEMESIS"],
+  ["NEMESIS", "APEX"],
+  ["APEX", "VORTEX"],
+  ["VORTEX", "EON"],
+  ["EON", "OBLIVION"],
+  ["OBLIVION", "ZENITH"],
+  ["ZENITH", "NYX"],
+  ["NYX", "BROTHERS"],
+  ["BROTHERS", "BROTHERS+"],
+] as const satisfies readonly (readonly [RankName, RankName])[];
+
+function getRankProductByName(name: RankName) {
+  const product = rankProducts.find((rank) => rank.name === name);
+  if (!product) {
+    throw new Error(`Missing rank product for ${name}.`);
+  }
+  return product;
+}
+
+function upgradeDelivery(from: RankName, to: RankName) {
+  const previous = rankDeliveryConfig[from];
+  const next = rankDeliveryConfig[to];
+  return [
+    `lp user %player% group remove ${previous.group}`,
+    `lp user %player% group set ${next.group}`,
+    `Multiplier set Rank ${next.multiplier} %player%`,
+  ];
+}
+
+const upgradeProducts: Product[] = upgradePairs.map(([fromName, toName]) => {
+  const fromRank = getRankProductByName(fromName);
+  const toRank = getRankProductByName(toName);
+  const fromGroup = rankDeliveryConfig[fromName].group;
+  const toGroup = rankDeliveryConfig[toName].group;
+  const differenceUsd = roundPrice(toRank.priceUsd - fromRank.priceUsd);
+  const priceUsd = roundPrice(differenceUsd * 0.9);
+  const savingsUsd = roundPrice(differenceUsd - priceUsd);
+
+  return {
+    id: `upgrade_${fromGroup}_to_${toGroup}`,
+    category: "upgrades",
+    name: `Upgrade ${fromRank.name} -> ${toRank.name}`,
+    description: `Sube de ${fromRank.name} a ${toRank.name} pagando solo la diferencia con 10% de descuento.`,
+    priceUsd,
+    badge: "Upgrade VIP",
+    gradientClass: toRank.gradientClass,
+    theme: toRank.theme,
+    visual: {
+      kind: "upgrade",
+      label: "UPGRADE",
+      detail: "10% OFF",
+      imageSrc: toRank.visual?.imageSrc,
+      imageAlt: `Upgrade de ${fromRank.name} a ${toRank.name}`,
+    },
+    upgradeVisual: {
+      fromLabel: fromRank.name,
+      toLabel: toRank.name,
+      fromImageSrc: fromRank.visual?.imageSrc,
+      fromImageAlt: fromRank.visual?.imageAlt,
+      toImageSrc: toRank.visual?.imageSrc,
+      toImageAlt: toRank.visual?.imageAlt,
+    },
+    stats: [
+      { label: "Actual", value: fromRank.name },
+      { label: "Nuevo", value: toRank.name },
+      { label: "Diferencia", value: formatUsd(differenceUsd) },
+      { label: "Descuento", value: "10%" },
+      { label: "Pagas", value: formatUsd(priceUsd) },
+    ],
+    rewards: [
+      `Quita el rango ${fromRank.name}`,
+      `Activa el rango ${toRank.name}`,
+      `Ahorro directo: ${formatUsd(savingsUsd)}`,
+      `Multiplicador nuevo: x${rankDeliveryConfig[toName].multiplier}`,
+      ...(toRank.rewards ?? []).slice(0, 4),
+    ],
+    commands: toRank.commands,
+    deliveryCommands: upgradeDelivery(fromName, toName),
+    perks: [`${fromRank.name} -> ${toRank.name}`, "10% de descuento", "Entrega automatica"],
+  };
+});
+
 const crateProducts: Product[] = [
   {
     id: "crate_brothers_x7",
@@ -815,6 +904,7 @@ const gkitProducts: Product[] = [
 
 export const catalog: Product[] = [
   ...rankProducts,
+  ...upgradeProducts,
   ...crateProducts,
   ...exclusiveProducts,
   ...gkitProducts,

@@ -5,6 +5,7 @@ import { getProductsByCategory } from "../lib/catalog";
 
 export default function StorePage() {
   const ranks = getProductsByCategory("rank");
+  const upgrades = getProductsByCategory("upgrades");
   const crates = getProductsByCategory("crate");
   const exclusives = getProductsByCategory("exclusive");
   const gkits = getProductsByCategory("gkit");
@@ -12,11 +13,14 @@ export default function StorePage() {
   return (
     <StoreShell
       title="Tienda BrotherSPvP"
-      subtitle="Compra rangos, llaves, exclusivos y GKits con entrega automatica despues de confirmar el pago."
+      subtitle="Compra rangos, upgrades, llaves, exclusivos y GKits con entrega automatica despues de confirmar el pago."
       right={
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:justify-end">
           <Link className="mc-button mc-button-ghost h-10 px-4 text-sm" href="/cart">
             Ver carrito
+          </Link>
+          <Link className="mc-button h-10 px-4 text-sm" href="/upgrades">
+            Upgrades
           </Link>
           <Link className="mc-button h-10 px-4 text-sm" href="/exclusivos">
             Exclusivos
@@ -47,6 +51,30 @@ export default function StorePage() {
                   key={product.id}
                   product={product}
                   primaryCtaVariant={index >= ranks.length - 2 ? "secondary" : "primary"}
+                  motionDelay={Math.min(index, 5) * 0.035}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h2 className="section-title">Upgrades VIP</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-white/65 sm:text-base">
+                  Sube al siguiente rango pagando solo la diferencia con 10% de descuento.
+                </p>
+              </div>
+              <Link className="section-link" href="/upgrades">
+                Ver upgrades
+              </Link>
+            </div>
+            <div className="mt-6 grid gap-5 xl:grid-cols-2">
+              {upgrades.map((product, index) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  primaryCtaVariant="secondary"
                   motionDelay={Math.min(index, 5) * 0.035}
                 />
               ))}

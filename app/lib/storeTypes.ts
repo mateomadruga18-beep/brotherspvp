@@ -1,4 +1,4 @@
-export type ProductCategory = "rank" | "crate" | "exclusive" | "gkit";
+export type ProductCategory = "rank" | "crate" | "exclusive" | "gkit" | "upgrades";
 
 export type ProductStat = {
   label: string;
@@ -23,7 +23,8 @@ export type ProductVisualKind =
   | "money"
   | "cosmetics"
   | "pet-slot"
-  | "gkit";
+  | "gkit"
+  | "upgrade";
 
 export type ProductVisual = {
   kind: ProductVisualKind;
@@ -31,6 +32,15 @@ export type ProductVisual = {
   detail?: string;
   imageSrc?: string;
   imageAlt?: string;
+};
+
+export type ProductUpgradeVisual = {
+  fromLabel: string;
+  toLabel: string;
+  fromImageSrc?: string;
+  fromImageAlt?: string;
+  toImageSrc?: string;
+  toImageAlt?: string;
 };
 
 export type Product = {
@@ -51,6 +61,7 @@ export type Product = {
   deliveryCommands?: string[];
   theme?: ProductTheme;
   visual?: ProductVisual;
+  upgradeVisual?: ProductUpgradeVisual;
   featured?: boolean;
 };
 
