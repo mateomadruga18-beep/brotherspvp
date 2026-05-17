@@ -57,6 +57,7 @@ function validateDeliveryCommand(command: string) {
     new RegExp(`^Multiplier set Rank (?:[2-9]|10|11)\\.0 ${usernamePattern}$`, "i"),
     new RegExp(`^lp user ${usernamePattern} permission set ultracosmetics\\.allcosmetics$`, "i"),
     new RegExp(`^crate give p Brothers 7 ${usernamePattern}$`, "i"),
+    new RegExp(`^crate give p SUCO 1 ${usernamePattern}$`, "i"),
     new RegExp(`^kit give bundle5 ${usernamePattern}$`, "i"),
     new RegExp(`^kit give reaper ${usernamePattern}$`, "i"),
     new RegExp(`^lootbox give ${usernamePattern} Premium 24$`, "i"),

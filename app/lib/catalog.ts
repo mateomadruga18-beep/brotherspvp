@@ -546,6 +546,45 @@ const crateProducts: Product[] = [
     rewards: ["7 llaves BROTHERS", "Crate premium del servidor", "Entrega automatica al usuario"],
     deliveryCommands: ["crate give p Brothers 7 %player%"],
   },
+  {
+    id: "crate_suco_fortuna",
+    category: "crate",
+    name: "Llave SUCO Fortuna",
+    description: "Key de suerte con 9 picos distintos: desde 10% hasta 80% de todos los enchants.",
+    priceUsd: 54.99,
+    badge: "Key de picos",
+    gradientClass: "from-cyan-400/26 via-emerald-300/18 to-transparent",
+    theme: {
+      accent: "#22d3ee",
+      accent2: "#34d399",
+      text: "#c6fff2",
+      glow: "rgba(34, 211, 238, 0.38)",
+      mark: "SU",
+    },
+    visual: {
+      kind: "crate",
+      label: "SUCO",
+      detail: "9 picos encantados",
+      imageSrc: "/assets/products/crate-suco-fortuna.png",
+      imageAlt: "Llave SUCO con nueve picos encantados y crate premium",
+    },
+    stats: [
+      { label: "Premios", value: "9 picos" },
+      { label: "Encants", value: "10%-80%" },
+      { label: "Tipo", value: "Suerte" },
+      { label: "Crate", value: "SUCO" },
+      { label: "Entrega", value: "x1 llave" },
+    ],
+    rewards: [
+      "1 llave SUCO",
+      "9 picos posibles con todos los enchants",
+      "Pico minimo: 10% de enchants",
+      "Pico maximo: 80% de enchants",
+      "El premio depende de la suerte del jugador",
+      "Entrega automatica al usuario",
+    ],
+    deliveryCommands: ["crate give p SUCO 1 %player%"],
+  },
 ];
 
 const exclusiveProducts: Product[] = [
