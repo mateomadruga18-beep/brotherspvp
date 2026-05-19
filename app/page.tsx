@@ -182,7 +182,7 @@ export default async function Home() {
                   </span>
                 </div>
 
-                <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+                <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap">
                   <Link className="mc-button w-full sm:w-auto" href="/exclusivos">
                     Ver exclusivos
                   </Link>
@@ -191,6 +191,9 @@ export default async function Home() {
                   </Link>
                   <Link className="mc-button mc-button-secondary w-full sm:w-auto" href="/gkits">
                     Ver GKits
+                  </Link>
+                  <Link className="mc-button mc-button-secondary w-full sm:w-auto" href="/pets">
+                    Ver pets
                   </Link>
                   <Link className="mc-button mc-button-secondary w-full sm:w-auto" href="/ranks">
                     Ver rangos
@@ -282,6 +285,9 @@ export default async function Home() {
             </Link>
             <Link className="transition hover:text-white" href="/gkits">
               GKits
+            </Link>
+            <Link className="transition hover:text-white" href="/pets">
+              Pets
             </Link>
             <Link className="transition hover:text-white" href="/cart">
               Carrito

@@ -58,7 +58,7 @@ export default function CartPage() {
           <div className="checkout-surface p-8 sm:p-10">
             <div className="text-lg font-black text-white">Tu carrito esta vacio</div>
             <div className="mt-2 text-sm leading-6 text-white/70">
-              Explora la tienda y agrega el rango, llave o exclusivo que quieras comprar.
+              Explora la tienda y agrega el rango, llave, pet o exclusivo que quieras comprar.
             </div>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Link className="mc-button w-full sm:w-auto" href="/store">

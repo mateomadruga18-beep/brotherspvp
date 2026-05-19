@@ -884,6 +884,87 @@ const exclusiveProducts: Product[] = [
   },
 ];
 
+const petProducts: Product[] = [
+  {
+    id: "pet_universal_egg",
+    category: "pet",
+    name: "Pet Universal",
+    description: "Huevo universal premium para desbloquear una pet especial dentro del servidor.",
+    priceUsd: 25,
+    badge: "Universal",
+    gradientClass: "from-violet-500/26 via-cyan-300/16 to-transparent",
+    theme: {
+      accent: "#8b5cf6",
+      accent2: "#22d3ee",
+      text: "#ede9fe",
+      glow: "rgba(139, 92, 246, 0.38)",
+      mark: "PU",
+    },
+    visual: {
+      kind: "pet",
+      label: "UNIVERSAL",
+      detail: "1 huevo",
+      imageSrc: "/assets/products/pet-universal-egg.png",
+      imageAlt: "Huevo universal de pets con mascotas voxel magicas",
+    },
+    stats: [
+      { label: "Rareza", value: "Universal" },
+      { label: "Huevos", value: "x1" },
+      { label: "Tipo", value: "Pets" },
+      { label: "Entrega", value: "Automatica" },
+      { label: "Precio", value: "$25" },
+    ],
+    rewards: [
+      "1 huevo universal de pets",
+      "Pet premium para tu cuenta",
+      "Ideal para completar tu coleccion de mascotas",
+      "Entrega automatica al usuario indicado",
+    ],
+    commands: ["Huevo universal", "Pet especial", "Coleccion premium"],
+    deliveryCommands: ["/pets giveuniversalegg %player%"],
+    perks: ["Pet universal", "1 huevo premium", "Entrega automatica"],
+  },
+  {
+    id: "pet_legendary_eggs_x3",
+    category: "pet",
+    name: "Pets Legendary x3",
+    description: "Pack de tres huevos legendary para conseguir mascotas fuertes y mejorar tu progreso.",
+    priceUsd: 17.99,
+    badge: "Legendary x3",
+    gradientClass: "from-amber-400/28 via-red-500/16 to-transparent",
+    theme: {
+      accent: "#f59e0b",
+      accent2: "#ef4444",
+      text: "#ffedd5",
+      glow: "rgba(245, 158, 11, 0.4)",
+      mark: "L3",
+    },
+    visual: {
+      kind: "pet",
+      label: "LEGENDARY",
+      detail: "x3 huevos",
+      imageSrc: "/assets/products/pet-legendary-eggs-x3.png",
+      imageAlt: "Tres huevos legendary de pets con brillo dorado",
+    },
+    stats: [
+      { label: "Rareza", value: "Legendary" },
+      { label: "Huevos", value: "x3" },
+      { label: "Tipo", value: "Pets" },
+      { label: "Entrega", value: "Automatica" },
+      { label: "Precio", value: "$17.99" },
+    ],
+    rewards: [
+      "3 huevos legendary de pets",
+      "Tres oportunidades para conseguir mascotas fuertes",
+      "Pack pensado para progresar mas rapido",
+      "Entrega automatica al usuario indicado",
+    ],
+    commands: ["Huevos legendary", "Pack x3", "Mascotas premium"],
+    deliveryCommands: ["/pets giveegg %player% legendary 3"],
+    perks: ["x3 pets legendary", "Pack de huevos", "Entrega automatica"],
+  },
+];
+
 const gkitProducts: Product[] = [
   {
     id: "gkit_reaper",
@@ -946,6 +1027,7 @@ export const catalog: Product[] = [
   ...upgradeProducts,
   ...crateProducts,
   ...exclusiveProducts,
+  ...petProducts,
   ...gkitProducts,
 ];
 

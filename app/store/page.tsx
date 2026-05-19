@@ -8,14 +8,15 @@ export default function StorePage() {
   const upgrades = getProductsByCategory("upgrades");
   const crates = getProductsByCategory("crate");
   const exclusives = getProductsByCategory("exclusive");
+  const pets = getProductsByCategory("pet");
   const gkits = getProductsByCategory("gkit");
 
   return (
     <StoreShell
       title="Tienda BrotherSPvP"
-      subtitle="Compra rangos, upgrades, llaves, exclusivos y GKits con entrega automatica despues de confirmar el pago."
+      subtitle="Compra rangos, upgrades, llaves, exclusivos, pets y GKits con entrega automatica despues de confirmar el pago."
       right={
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:justify-end">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center lg:justify-end">
           <Link className="mc-button mc-button-ghost h-10 px-4 text-sm" href="/cart">
             Ver carrito
           </Link>
@@ -24,6 +25,9 @@ export default function StorePage() {
           </Link>
           <Link className="mc-button h-10 px-4 text-sm" href="/exclusivos">
             Exclusivos
+          </Link>
+          <Link className="mc-button h-10 px-4 text-sm" href="/pets">
+            Pets
           </Link>
           <Link className="mc-button mc-button-secondary h-10 px-4 text-sm" href="/gkits">
             GKits
@@ -51,6 +55,30 @@ export default function StorePage() {
                   key={product.id}
                   product={product}
                   primaryCtaVariant={index >= ranks.length - 2 ? "secondary" : "primary"}
+                  motionDelay={Math.min(index, 5) * 0.035}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h2 className="section-title">Pets</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-white/65 sm:text-base">
+                  Huevos de pets universal y legendary con entrega automatica al usuario de checkout.
+                </p>
+              </div>
+              <Link className="section-link" href="/pets">
+                Ver pets
+              </Link>
+            </div>
+            <div className="mt-6 grid gap-5 xl:grid-cols-2">
+              {pets.map((product, index) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  primaryCtaVariant={product.id === "pet_universal_egg" ? "secondary" : "primary"}
                   motionDelay={Math.min(index, 5) * 0.035}
                 />
               ))}

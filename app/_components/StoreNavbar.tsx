@@ -12,6 +12,7 @@ const links = [
   { href: "/upgrades", label: "Upgrades" },
   { href: "/crates", label: "Llaves" },
   { href: "/exclusivos", label: "Exclusivos" },
+  { href: "/pets", label: "Pets" },
   { href: "/gkits", label: "GKits" },
 ];
 
@@ -38,7 +39,7 @@ export function StoreNavbar() {
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-1 text-sm font-bold md:flex">
+        <nav className="hidden items-center gap-1 text-sm font-bold lg:flex">
           {links.map((link) => {
             const active = pathname === link.href;
             return (
@@ -66,7 +67,7 @@ export function StoreNavbar() {
         </div>
       </div>
 
-      <div className="container pb-3 md:hidden">
+      <div className="container pb-3 lg:hidden">
         <div className="flex flex-wrap gap-2">
           {links.map((link) => {
             const active = pathname === link.href;
